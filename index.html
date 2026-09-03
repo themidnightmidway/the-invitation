@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#080503" />
+  <title>The Midnight Midway</title>
+  <meta name="description" content="The Midnight Midway — Step Right Up for a Night at the Carnival. Friday, October 23, 2026 at 7 PM." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="viewport" aria-label="The Midnight Midway invitation">
+    <section class="poster-shell" aria-label="Interactive vintage carnival invitation">
+      <div id="poster" class="poster" aria-hidden="false">
+        <img class="layer bg" src="assets/background.png" alt="" style="--x:0;--y:0;--w:1080;--h:1920;--z:1" />
+
+        <img class="layer pulse-soft" src="assets/red-star-bottom-1.png" alt="" style="--x:-6;--y:1649;--w:259;--h:275;--z:2" />
+        <img class="layer pulse-soft delay-2" src="assets/red-star-bottom-2.png" alt="" style="--x:1;--y:1623;--w:92;--h:95;--z:3" />
+        <img class="layer pulse-soft delay-3" src="assets/red-star-bottom-3.png" alt="" style="--x:195;--y:1736;--w:180;--h:188;--z:4" />
+        <img class="layer" src="assets/come-if-you-dare.png" alt="" style="--x:57;--y:1551;--w:374;--h:254;--z:5" />
+        <img class="layer" src="assets/moon.png" alt="" style="--x:20;--y:28;--w:225;--h:233;--z:6" />
+
+        <img id="art-legend" class="layer interactive-art" src="assets/legend.png" alt="" style="--x:417;--y:1405;--w:349;--h:478;--z:7" />
+        <img id="art-event" class="layer interactive-art" src="assets/party-info.png" alt="" style="--x:329;--y:685;--w:511;--h:738;--z:8" />
+        <img class="layer" src="assets/step-up.png" alt="" style="--x:20;--y:688;--w:397;--h:544;--z:9" />
+        <img id="art-costumes" class="layer interactive-art" src="assets/costumes.png" alt="" style="--x:762;--y:643;--w:355;--h:563;--z:10" />
+        <img id="art-rsvp" class="layer interactive-art interactive-art-primary" src="assets/rsvp.png" alt="" style="--x:0;--y:1300;--w:487;--h:282;--z:11" />
+        <img id="art-awaits" class="layer interactive-art" src="assets/what-awaits.png" alt="" style="--x:712;--y:1166;--w:352;--h:481;--z:12" />
+        <img class="layer" src="assets/nothing-is-as-it-seems.png" alt="" style="--x:713;--y:1600;--w:268;--h:271;--z:13" />
+        <img class="layer pulse-soft delay-4" src="assets/red-star-tall.png" alt="" style="--x:154;--y:16;--w:197;--h:1364;--z:14" />
+
+        <div class="layer glisten-wrap" style="--x:670;--y:29;--w:348;--h:165;--z:15">
+          <img src="assets/gold-stars.png" alt="" />
+          <span class="glisten" aria-hidden="true"></span>
+        </div>
+
+        <div class="layer marquee-wrap" style="--x:61;--y:64;--w:958;--h:636;--z:16">
+          <img src="assets/marquee.png" alt="The Midnight Midway" />
+        </div>
+
+        <div class="layer marquee-tagline" style="--x:205;--y:602;--w:670;--h:52;--z:16.5">Step Right Up for a Night at the Carnival</div>
+
+        <img class="layer foreground" src="assets/grunge-foreground.png" alt="" style="--x:-450;--y:0;--w:1530;--h:1922;--z:17" />
+
+        <!-- Bulb light overlays use the exact centers of the 18 Photoshop guide layers
+             in TMM(invite)(3).psd. They intentionally sit ABOVE the grunge layer. -->
+        <div id="bulbs" class="bulbs-stage" aria-hidden="true"></div>
+
+        <!-- Real HTML controls sit over the Photoshop artwork. -->
+        <button class="hotspot hotspot-event" data-dialog="event-dialog" data-art="art-event" aria-label="Open date, time, and location"></button>
+        <button class="hotspot hotspot-costumes" data-dialog="costumes-dialog" data-art="art-costumes" aria-label="Open attire details"></button>
+        <button class="hotspot hotspot-rsvp" data-dialog="rsvp-dialog" data-art="art-rsvp" aria-label="RSVP to The Midnight Midway"></button>
+        <button class="hotspot hotspot-awaits" data-dialog="awaits-dialog" data-art="art-awaits" aria-label="Open party details"></button>
+        <button class="hotspot hotspot-legend" data-dialog="legend-dialog" data-art="art-legend" aria-label="Read The Legend"></button>
+      </div>
+    </section>
+  </main>
+
+  <section id="intro" class="intro" aria-label="Enter The Midnight Midway">
+    <div class="intro-vignette"></div>
+    <div class="intro-card">
+      <p class="intro-kicker">FOR ONE NIGHT ONLY</p>
+      <h1>THE MIDNIGHT<br><span>MIDWAY</span></h1>
+      <p class="intro-tagline">Step Right Up for a Night at the Carnival</p>
+      <button id="enterButton" class="enter-button">ENTER THE MIDWAY</button>
+    </div>
+  </section>
+
+  <div id="rotateHint" class="rotate-hint" role="status">
+    <div class="rotate-card">
+      <span class="rotate-icon">↻</span>
+      <strong>Turn your phone upright</strong>
+      <span>The midway looks better in portrait.</span>
+    </div>
+  </div>
+
+  <dialog id="event-dialog" class="midway-dialog">
+    <button class="close-dialog" aria-label="Close">×</button>
+    <p class="eyebrow">FOR ONE NIGHT ONLY</p>
+    <h2>Friday, October 23, 2026</h2>
+    <p class="dialog-subtitle">Step Right Up for a Night at the Carnival</p>
+    <div class="rule"></div>
+    <p class="big-detail">7 PM</p>
+    <p>Samantha &amp; Greg's<br />1 Makefield Road, G313<br />Yardley, PA 19067</p>
+  </dialog>
+
+  <dialog id="costumes-dialog" class="midway-dialog">
+    <button class="close-dialog" aria-label="Close">×</button>
+    <p class="eyebrow">WHAT WILL YOU WEAR AFTER DARK?</p>
+    <h2>Dark Carnival Attire</h2>
+    <div class="rule"></div>
+    <p>Vintage carnival, ringmaster, cabaret, sideshow, and dark midway looks are welcome. Costumes encouraged.</p>
+  </dialog>
+
+  <dialog id="awaits-dialog" class="midway-dialog">
+    <button class="close-dialog" aria-label="Close">×</button>
+    <p class="eyebrow">WHAT AWAITS YOU ON THE MIDWAY?</p>
+    <h2>Food • Drinks • Music • Mayhem</h2>
+    <div class="rule"></div>
+    <p>No scheduled spectacle. Just a very good excuse to dress strangely, eat, drink, put on music, and stay awhile.</p>
+  </dialog>
+
+  <dialog id="legend-dialog" class="midway-dialog legend-dialog">
+    <button class="close-dialog" aria-label="Close">×</button>
+    <p class="eyebrow">THE LEGEND</p>
+    <h2>Some say it's just a midway.</h2>
+    <div class="rule"></div>
+    <p>Some say it's something more.</p>
+    <p class="you-decide">YOU DECIDE.</p>
+  </dialog>
+
+  <dialog id="rsvp-dialog" class="rsvp-dialog" aria-labelledby="rsvp-title">
+    <button class="close-dialog rsvp-close" aria-label="Close RSVP">CLOSE</button>
+
+    <form id="rsvpForm" class="ticket-rsvp-form">
+      <h2 id="rsvp-title" class="sr-only">RSVP to The Midnight Midway</h2>
+
+      <div id="rsvpTicket" class="admit-ticket-stage">
+        <img class="admit-ticket-art" src="assets/admit-one-ticket.png" alt="Admit One to The Midnight Midway RSVP ticket" />
+
+        <!-- Coordinates below come directly from the named guide layers in AdmitOne.psd. -->
+        <label class="ticket-field ticket-name-field">
+          <span class="sr-only">Name or names</span>
+          <input id="rsvpNames" type="text" name="name" autocomplete="name" aria-label="Name or names" required />
+        </label>
+
+        <label class="ticket-choice ticket-yes-choice" title="Yes, I dare">
+          <input type="radio" name="attendance" value="Yes, I dare" aria-label="Yes, I dare" required />
+          <span class="ticket-check" aria-hidden="true"></span>
+        </label>
+
+        <label class="ticket-choice ticket-no-choice" title="Regretfully no">
+          <input type="radio" name="attendance" value="Regretfully no" aria-label="Regretfully no" required />
+          <span class="ticket-check" aria-hidden="true"></span>
+        </label>
+
+        <label class="ticket-field ticket-guest-field">
+          <span class="sr-only">Guest count</span>
+          <select id="guestCount" name="guests" aria-label="Guest count" required>
+            <option value="" selected>—</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+          </select>
+        </label>
+
+        <div id="rsvpSuccess" class="rsvp-success-ticket" hidden aria-live="polite">
+          <div class="ticket-stamp">ADMISSION<br />RECORDED</div>
+        </div>
+      </div>
+
+      <button type="submit" class="claim-button ticket-submit">CLAIM ADMISSION</button>
+      <p class="form-note">Your RSVP is sent directly to Samantha &amp; Greg.</p>
+    </form>
+  </dialog>
+
+  <script src="script.js"></script>
+</body>
+</html>
