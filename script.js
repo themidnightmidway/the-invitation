@@ -13,7 +13,7 @@ if (isTouchDevice) document.documentElement.classList.add('touch-device');
 
 // Paste your deployed Google Apps Script Web App URL here.
 // Leave blank while designing. In demo mode, the form still shows the success state.
-const GOOGLE_SCRIPT_URL = '';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwMe62Pc3l_5OviiNVUYfH-04TTCpRocz8KLrl0lYb3EecFbkCTEenawTYWIbZfOcb2/exec';
 
 function fitPoster() {
   const safeW = document.documentElement.clientWidth || window.innerWidth;
