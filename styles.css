@@ -10,7 +10,7 @@
 }
 
 * { box-sizing: border-box; }
-html, body { width: 100%; height: 100%; margin: 0; }
+html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; }
 body {
   overflow: hidden;
   background:
@@ -27,9 +27,29 @@ button { -webkit-tap-highlight-color: transparent; }
   position: fixed;
   inset: 0;
   overflow: hidden;
+  background: #050403;
 }
+
+/* Fill any extra space on tall/narrow or wide screens with ONLY the
+   invitation's background artwork. The 1080x1920 poster itself still
+   scales with contain behavior, so it never crops and never scrolls. */
+.viewport::before {
+  content: "";
+  position: absolute;
+  inset: -28px;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(5,4,3,.18), rgba(5,4,3,.18)),
+    url("assets/background.png") center center / cover no-repeat;
+  filter: blur(8px) brightness(.72) saturate(.88);
+  transform: scale(1.035);
+  transform-origin: center;
+}
+
 .poster-shell {
   position: absolute;
+  z-index: 1;
   left: 0;
   top: 0;
   width: 1080px;
