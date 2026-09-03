@@ -474,8 +474,7 @@ fieldset { border:1px solid rgba(233,207,151,.35); padding:13px 14px 8px; margin
   text-transform:uppercase;
   box-shadow:0 8px 24px rgba(0,0,0,.4);
 }
-.rsvp-dialog .rsvp-close:hover,
-.rsvp-dialog .rsvp-close:focus-visible { filter:brightness(1.18); outline:2px solid #e4c98f; outline-offset:2px; }
+/* Close-button hover/focus styling is defined in the fine-pointer media query below. */
 
 .ticket-rsvp-form {
   width:100%;
@@ -823,5 +822,58 @@ fieldset { border:1px solid rgba(233,207,151,.35); padding:13px 14px 8px; margin
     opacity: .82 !important;
     transform: none !important;
     filter: brightness(1.15) !important;
+  }
+}
+
+
+/* ---------- iOS / touch focus cleanup ----------
+   iPhone Safari can treat a tap as hover + focus before firing click.
+   These rules guarantee no gold hotspot box or blue close-button box on touch.
+*/
+html.touch-device .hotspot,
+html.touch-device .hotspot:focus,
+html.touch-device .hotspot:focus-visible,
+html.touch-device .hotspot:hover {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+html.touch-device .hotspot::after,
+html.touch-device .hotspot:hover::after,
+html.touch-device .hotspot:focus::after,
+html.touch-device .hotspot:focus-visible::after {
+  display: none !important;
+  opacity: 0 !important;
+  box-shadow: none !important;
+}
+
+html.touch-device .close-dialog,
+html.touch-device .close-dialog:focus,
+html.touch-device .close-dialog:focus-visible,
+html.touch-device .close-dialog:hover,
+html.touch-device .rsvp-close,
+html.touch-device .rsvp-close:focus,
+html.touch-device .rsvp-close:focus-visible,
+html.touch-device .rsvp-close:hover {
+  outline: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* The dialog receives initial focus instead of the X. */
+.midway-dialog:focus,
+.rsvp-dialog:focus {
+  outline: none !important;
+}
+
+/* Keep close-button hover/focus styling for real mouse/keyboard devices only. */
+@media (hover: hover) and (pointer: fine) {
+  .rsvp-dialog .rsvp-close:hover,
+  .rsvp-dialog .rsvp-close:focus-visible {
+    filter: brightness(1.18);
+    outline: 2px solid #e4c98f;
+    outline-offset: 2px;
   }
 }
