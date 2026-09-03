@@ -5,10 +5,15 @@ const posterShell = document.querySelector('.poster-shell');
 const intro = document.getElementById('intro');
 const enterButton = document.getElementById('enterButton');
 const bulbsContainer = document.getElementById('bulbs');
+// Reliable touch-device flag for iPhone/iPad Safari.
+// Safari can sometimes emulate hover/focus in ways that CSS media queries alone don't catch.
+const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0 || window.matchMedia('(pointer: coarse)').matches;
+if (isTouchDevice) document.documentElement.classList.add('touch-device');
+
 
 // Paste your deployed Google Apps Script Web App URL here.
 // Leave blank while designing. In demo mode, the form still shows the success state.
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwMe62Pc3l_5OviiNVUYfH-04TTCpRocz8KLrl0lYb3EecFbkCTEenawTYWIbZfOcb2/exec';
+const GOOGLE_SCRIPT_URL = '';
 
 function fitPoster() {
   const safeW = document.documentElement.clientWidth || window.innerWidth;
@@ -87,7 +92,23 @@ const dialogs = [...document.querySelectorAll('dialog')];
 document.querySelectorAll('[data-dialog]').forEach(button => {
   button.addEventListener('click', () => {
     const dialog = document.getElementById(button.dataset.dialog);
-    dialog?.showModal();
+    if (!dialog) return;
+
+    // Prevent iOS Safari from leaving the invisible hotspot focused after a tap.
+    button.blur();
+
+    // Focus the dialog itself instead of Safari auto-focusing the first control
+    // (which was the close button and caused the blue box around the X).
+    dialog.setAttribute('tabindex', '-1');
+    dialog.showModal();
+
+    requestAnimationFrame(() => {
+      try {
+        dialog.focus({ preventScroll: true });
+      } catch {
+        dialog.focus();
+      }
+    });
   });
 });
 
