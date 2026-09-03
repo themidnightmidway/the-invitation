@@ -87,10 +87,21 @@ button { -webkit-tap-highlight-color: transparent; }
   box-shadow: 0 0 0 6px rgba(214, 167, 86, .22), 0 0 35px rgba(214, 167, 86, .25);
   transition: opacity .18s ease;
 }
-.hotspot:hover::after,
+/* Desktop hover/focus cue only. iOS Safari can emulate :hover on the first tap,
+   which creates a stuck gold box and may require a second tap to activate. */
 .hotspot:focus-visible::after { opacity: 1; }
 .hotspot:focus-visible { outline: 4px solid rgba(226, 210, 174, .8); outline-offset: 4px; }
 .hotspot:active { transform: scale(.985); }
+
+@media (hover: hover) and (pointer: fine) {
+  .hotspot:hover::after { opacity: 1; }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .hotspot::after { display: none !important; }
+  .hotspot:focus,
+  .hotspot:focus-visible { outline: none !important; }
+}
 
 .hotspot-event { left:329px; top:685px; width:511px; height:738px; }
 .hotspot-costumes { left:790px; top:665px; width:280px; height:510px; transform: rotate(1deg); }
