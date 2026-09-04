@@ -659,6 +659,7 @@ const DRIVE_UPLOAD_URL =
     (error?.message || String(error))
   );
 }
+      }
       /* Reset the phone's file picker */
 
       fileInput.value = '';
