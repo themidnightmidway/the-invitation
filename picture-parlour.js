@@ -1,26 +1,42 @@
-
 /* =========================================================
    THE PICTURE PARLOUR
-   Front-end interaction only.
-   Selected photos appear in the gallery for the current page
-   session. Persistent party uploads will be connected later.
+   Mobile-first photo upload + gallery interaction.
+
+   Photos:
+   - are resized/compressed in the browser
+   - are uploaded to Google Drive through Apps Script
+   - appear immediately in the gallery for this page session
+   - can be tapped to open larger in a lightbox
    ========================================================= */
+
 const DRIVE_UPLOAD_URL =
   'https://script.google.com/macros/s/AKfycbwZadhWcQTpWbepfbPngKbl10JpbMzLRT77_gD5bbUsG1nkxv5F1qU8JKmemfIiZnk52g/exec';
-(() => {
-const camera = document.getElementById('art-camera');
-const cameraHotspot = document.querySelector('.hotspot-camera');
 
-if (!camera || !cameraHotspot) return;
+(() => {
+  const camera = document.getElementById('art-camera');
+  const cameraHotspot = document.querySelector('.hotspot-camera');
+
+  if (!camera || !cameraHotspot) return;
+
+  /* =========================================================
+     CURRENT-SESSION PHOTOS
+     ========================================================= */
 
   const selectedPhotos = [];
   const objectUrls = [];
 
+  /* =========================================================
+     CREATE PICTURE PARLOUR
+     ========================================================= */
+
   const parlour = document.createElement('dialog');
+
   parlour.id = 'pictureParlourDialog';
   parlour.className = 'picture-parlour-dialog';
+
   parlour.innerHTML = `
     <div class="picture-parlour-stage">
+
       <img
         class="picture-parlour-art"
         src="assets/picture-parlour.png"
@@ -43,9 +59,14 @@ if (!camera || !cameraHotspot) return;
         type="button"
         class="picture-parlour-close"
         aria-label="Close The Picture Parlour"
-      >Close</button>
+      >
+        Close
+      </button>
 
-      <p class="picture-parlour-status" aria-live="polite"></p>
+      <p
+        class="picture-parlour-status"
+        aria-live="polite"
+      ></p>
 
       <input
         class="picture-parlour-file-input"
@@ -54,86 +75,194 @@ if (!camera || !cameraHotspot) return;
         multiple
         hidden
       />
+
     </div>
   `;
+
   document.body.appendChild(parlour);
 
+  /* =========================================================
+     CREATE GALLERY
+     ========================================================= */
+
   const gallery = document.createElement('dialog');
+
   gallery.id = 'pictureGalleryDialog';
   gallery.className = 'picture-gallery-dialog';
+
   gallery.innerHTML = `
     <div class="picture-gallery-shell">
+
       <button
         type="button"
         class="picture-gallery-close"
         aria-label="Close gallery"
-      >Close</button>
+      >
+        Close
+      </button>
 
-      <h2 class="picture-gallery-title">The Picture Parlour</h2>
-      <p class="picture-gallery-subtitle">Caught beneath the carnival lights.</p>
+      <h2 class="picture-gallery-title">
+        The Picture Parlour
+      </h2>
 
-      <div class="picture-gallery-grid" aria-live="polite"></div>
+      <p class="picture-gallery-subtitle">
+        Caught beneath the carnival lights.
+      </p>
 
-      <button type="button" class="picture-gallery-add">
+      <div
+        class="picture-gallery-grid"
+        aria-live="polite"
+      ></div>
+
+      <button
+        type="button"
+        class="picture-gallery-add"
+      >
         Upload Photos
       </button>
+
     </div>
   `;
+
   document.body.appendChild(gallery);
 
+  /* =========================================================
+     CREATE LARGE-PHOTO LIGHTBOX
+     ========================================================= */
+
   const lightbox = document.createElement('div');
+
   lightbox.className = 'picture-lightbox';
   lightbox.hidden = true;
+
   lightbox.innerHTML = `
-    <button type="button" class="picture-lightbox-close" aria-label="Close photo">×</button>
-    <img alt="Selected party photo" />
+    <button
+      type="button"
+      class="picture-lightbox-close"
+      aria-label="Close photo"
+    >
+      ×
+    </button>
+
+    <img
+      class="picture-lightbox-image"
+      src=""
+      alt="Enlarged Midnight Midway photo"
+    />
   `;
+
   document.body.appendChild(lightbox);
 
-  const uploadButton = parlour.querySelector('.picture-parlour-upload');
-  const galleryButton = parlour.querySelector('.picture-parlour-gallery');
-  const parlourClose = parlour.querySelector('.picture-parlour-close');
-  const fileInput = parlour.querySelector('.picture-parlour-file-input');
-  const status = parlour.querySelector('.picture-parlour-status');
+  /* =========================================================
+     ELEMENT REFERENCES
+     ========================================================= */
 
-  const galleryClose = gallery.querySelector('.picture-gallery-close');
-  const galleryGrid = gallery.querySelector('.picture-gallery-grid');
-  const galleryAdd = gallery.querySelector('.picture-gallery-add');
+  const uploadButton =
+    parlour.querySelector('.picture-parlour-upload');
 
-  const lightboxImage = lightbox.querySelector('img');
-  const lightboxClose = lightbox.querySelector('.picture-lightbox-close');
+  const galleryButton =
+    parlour.querySelector('.picture-parlour-gallery');
 
-  function showStatus(message) {
+  const parlourClose =
+    parlour.querySelector('.picture-parlour-close');
+
+  const fileInput =
+    parlour.querySelector('.picture-parlour-file-input');
+
+  const status =
+    parlour.querySelector('.picture-parlour-status');
+
+  const galleryClose =
+    gallery.querySelector('.picture-gallery-close');
+
+  const galleryGrid =
+    gallery.querySelector('.picture-gallery-grid');
+
+  const galleryAdd =
+    gallery.querySelector('.picture-gallery-add');
+
+  const lightboxImage =
+    lightbox.querySelector('.picture-lightbox-image');
+
+  const lightboxClose =
+    lightbox.querySelector('.picture-lightbox-close');
+
+  /* =========================================================
+     STATUS MESSAGE
+     ========================================================= */
+
+  let statusTimer;
+
+  function showStatus(message, duration = 2600) {
+    window.clearTimeout(statusTimer);
+
     status.textContent = message;
     status.classList.add('is-visible');
-    window.setTimeout(() => status.classList.remove('is-visible'), 2600);
+
+    statusTimer = window.setTimeout(() => {
+      status.classList.remove('is-visible');
+    }, duration);
   }
+
+  /* =========================================================
+     RENDER GALLERY
+     ========================================================= */
 
   function renderGallery() {
     galleryGrid.innerHTML = '';
 
     if (!selectedPhotos.length) {
       const empty = document.createElement('p');
+
       empty.className = 'picture-gallery-empty';
-      empty.textContent = 'No photographs have been added yet. Be the first to leave one behind.';
+
+      empty.textContent =
+        'No photographs have been added yet. Be the first to leave one behind.';
+
       galleryGrid.appendChild(empty);
+
       return;
     }
 
-    const tilts = [-2.1, 1.4, -0.8, 2.2, -1.5, .7];
+    const tilts = [
+      -2.1,
+      1.4,
+      -0.8,
+      2.2,
+      -1.5,
+      0.7
+    ];
 
     selectedPhotos.forEach((photo, index) => {
-      const button = document.createElement('button');
+      const button =
+        document.createElement('button');
+
       button.type = 'button';
       button.className = 'picture-polaroid';
-      button.style.setProperty('--tilt', `${tilts[index % tilts.length]}deg`);
-      button.setAttribute('aria-label', `Open photo ${index + 1}`);
 
-      const image = document.createElement('img');
+      button.style.setProperty(
+        '--tilt',
+        `${tilts[index % tilts.length]}deg`
+      );
+
+      button.setAttribute(
+        'aria-label',
+        `Open photo ${index + 1}`
+      );
+
+      const image =
+        document.createElement('img');
+
       image.src = photo.url;
-      image.alt = photo.file.name || `Party photo ${index + 1}`;
+
+      image.alt =
+        photo.file.name ||
+        `Party photo ${index + 1}`;
 
       button.appendChild(image);
+
+      /* MOBILE TAP → OPEN LARGE PHOTO */
+
       button.addEventListener('click', () => {
         lightboxImage.src = photo.url;
         lightbox.hidden = false;
@@ -142,6 +271,10 @@ if (!camera || !cameraHotspot) return;
       galleryGrid.appendChild(button);
     });
   }
+
+  /* =========================================================
+     OPEN / CLOSE PICTURE PARLOUR
+     ========================================================= */
 
   function openParlour() {
     if (typeof parlour.showModal === 'function') {
@@ -152,15 +285,23 @@ if (!camera || !cameraHotspot) return;
   }
 
   function closeParlour() {
-    if (typeof parlour.close === 'function' && parlour.open) {
+    if (
+      typeof parlour.close === 'function' &&
+      parlour.open
+    ) {
       parlour.close();
     } else {
       parlour.removeAttribute('open');
     }
   }
 
+  /* =========================================================
+     OPEN / CLOSE GALLERY
+     ========================================================= */
+
   function openGallery() {
     renderGallery();
+
     closeParlour();
 
     if (typeof gallery.showModal === 'function') {
@@ -171,184 +312,448 @@ if (!camera || !cameraHotspot) return;
   }
 
   function closeGallery() {
-    if (typeof gallery.close === 'function' && gallery.open) {
+    if (
+      typeof gallery.close === 'function' &&
+      gallery.open
+    ) {
       gallery.close();
     } else {
       gallery.removeAttribute('open');
     }
   }
 
-cameraHotspot.addEventListener('click', (event) => {
-  event.preventDefault();
-  event.stopPropagation();
-  openParlour();
-});
-  uploadButton.addEventListener('click', () => fileInput.click());
+  /* =========================================================
+     OPEN / CLOSE LARGE PHOTO
+     ========================================================= */
 
-  galleryButton.addEventListener('click', openGallery);
+  function closeLightbox() {
+    lightbox.hidden = true;
 
-  parlourClose.addEventListener('click', closeParlour);
-
-  galleryClose.addEventListener('click', closeGallery);
-
-  galleryAdd.addEventListener('click', () => {
-    closeGallery();
-    openParlour();
-    window.setTimeout(() => fileInput.click(), 80);
-  });
-function readFileAsDataURL(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(reader.error);
-
-    reader.readAsDataURL(file);
-  });
-}
-
-function loadImageFromFile(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const image = new Image();
-
-      image.onload = () => resolve(image);
-      image.onerror = () => reject(
-        new Error('This photo could not be read.')
-      );
-
-      image.src = reader.result;
-    };
-
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
-}
-
-async function preparePhotoForUpload(file) {
-  const image = await loadImageFromFile(file);
-
-  const MAX_DIMENSION = 1800;
-
-  let width = image.naturalWidth;
-  let height = image.naturalHeight;
-
-  if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
-    const scale = Math.min(
-      MAX_DIMENSION / width,
-      MAX_DIMENSION / height
-    );
-
-    width = Math.round(width * scale);
-    height = Math.round(height * scale);
+    lightboxImage.removeAttribute('src');
   }
 
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
+  /* =========================================================
+     CAMERA
+     ========================================================= */
 
-  const context = canvas.getContext('2d');
+  cameraHotspot.addEventListener(
+    'click',
+    event => {
+      event.preventDefault();
+      event.stopPropagation();
 
-  context.drawImage(
-    image,
-    0,
-    0,
-    width,
-    height
+      openParlour();
+    }
   );
 
-  const blob = await new Promise((resolve, reject) => {
-    canvas.toBlob(
-      result => {
-        if (result) {
-          resolve(result);
-        } else {
-          reject(new Error('Could not prepare photo.'));
-        }
-      },
-      'image/jpeg',
-      0.84
-    );
-  });
+  /* =========================================================
+     PICTURE PARLOUR BUTTONS
+     ========================================================= */
 
-  const dataURL = await readFileAsDataURL(blob);
+  uploadButton.addEventListener(
+    'click',
+    () => {
+      fileInput.click();
+    }
+  );
 
-  const originalBaseName =
-    file.name.replace(/\.[^.]+$/, '') || 'midway-photo';
+  galleryButton.addEventListener(
+    'click',
+    openGallery
+  );
 
-  return {
-    action: 'uploadPhoto',
-    fileName: originalBaseName + '.jpg',
-    mimeType: 'image/jpeg',
-    base64: dataURL.split(',')[1]
-  };
-}
+  parlourClose.addEventListener(
+    'click',
+    closeParlour
+  );
 
-async function uploadPhotoToDrive(file) {
-  const payload = await preparePhotoForUpload(file);
+  /* =========================================================
+     GALLERY BUTTONS
+     ========================================================= */
 
-  const response = await fetch(DRIVE_UPLOAD_URL, {
-    method: 'POST',
-    redirect: 'follow',
-    headers: {
-      'Content-Type': 'text/plain;charset=utf-8'
-    },
-    body: JSON.stringify(payload)
-  });
+  galleryClose.addEventListener(
+    'click',
+    closeGallery
+  );
 
-  const result = await response.json();
+  galleryAdd.addEventListener(
+    'click',
+    () => {
+      closeGallery();
 
-  if (!result.ok) {
-    throw new Error(
-      result.error || 'Google Drive upload failed.'
+      openParlour();
+
+      window.setTimeout(() => {
+        fileInput.click();
+      }, 80);
+    }
+  );
+
+  /* =========================================================
+     FILE → DATA URL
+     ========================================================= */
+
+  function readFileAsDataURL(file) {
+    return new Promise(
+      (resolve, reject) => {
+        const reader =
+          new FileReader();
+
+        reader.onload = () => {
+          resolve(reader.result);
+        };
+
+        reader.onerror = () => {
+          reject(reader.error);
+        };
+
+        reader.readAsDataURL(file);
+      }
     );
   }
 
-  return result;
-}
-  fileInput.addEventListener('change', () => {
-    const files = Array.from(fileInput.files || []).filter(file =>
-      file.type.startsWith('image/')
+  /* =========================================================
+     LOAD SELECTED PHOTO
+     ========================================================= */
+
+  function loadImageFromFile(file) {
+    return new Promise(
+      (resolve, reject) => {
+        const reader =
+          new FileReader();
+
+        reader.onload = () => {
+          const image =
+            new Image();
+
+          image.onload = () => {
+            resolve(image);
+          };
+
+          image.onerror = () => {
+            reject(
+              new Error(
+                'This photo could not be read.'
+              )
+            );
+          };
+
+          image.src =
+            reader.result;
+        };
+
+        reader.onerror = () => {
+          reject(reader.error);
+        };
+
+        reader.readAsDataURL(file);
+      }
     );
+  }
 
-    if (!files.length) return;
+  /* =========================================================
+     RESIZE + COMPRESS PHOTO BEFORE UPLOAD
+     ========================================================= */
 
-    files.forEach(file => {
-      const url = URL.createObjectURL(file);
-      objectUrls.push(url);
-      selectedPhotos.push({ file, url });
-    });
+  async function preparePhotoForUpload(file) {
+    const image =
+      await loadImageFromFile(file);
 
-    showStatus(
-      `${files.length} photo${files.length === 1 ? '' : 's'} added to this preview.`
-    );
+    const MAX_DIMENSION = 1800;
 
-    fileInput.value = '';
-  });
+    let width =
+      image.naturalWidth;
 
-  lightboxClose.addEventListener('click', () => {
-    lightbox.hidden = true;
-    lightboxImage.removeAttribute('src');
-  });
+    let height =
+      image.naturalHeight;
 
-  lightbox.addEventListener('click', event => {
-    if (event.target === lightbox) {
-      lightbox.hidden = true;
-      lightboxImage.removeAttribute('src');
+    if (
+      width > MAX_DIMENSION ||
+      height > MAX_DIMENSION
+    ) {
+      const scale =
+        Math.min(
+          MAX_DIMENSION / width,
+          MAX_DIMENSION / height
+        );
+
+      width =
+        Math.round(width * scale);
+
+      height =
+        Math.round(height * scale);
     }
-  });
 
-  parlour.addEventListener('click', event => {
-    if (event.target === parlour) closeParlour();
-  });
+    const canvas =
+      document.createElement('canvas');
 
-  gallery.addEventListener('click', event => {
-    if (event.target === gallery) closeGallery();
-  });
+    canvas.width = width;
+    canvas.height = height;
 
-  window.addEventListener('pagehide', () => {
-    objectUrls.forEach(url => URL.revokeObjectURL(url));
-  });
+    const context =
+      canvas.getContext('2d');
+
+    context.drawImage(
+      image,
+      0,
+      0,
+      width,
+      height
+    );
+
+    const blob =
+      await new Promise(
+        (resolve, reject) => {
+          canvas.toBlob(
+            result => {
+              if (result) {
+                resolve(result);
+              } else {
+                reject(
+                  new Error(
+                    'Could not prepare photo.'
+                  )
+                );
+              }
+            },
+            'image/jpeg',
+            0.84
+          );
+        }
+      );
+
+    const dataURL =
+      await readFileAsDataURL(blob);
+
+    const originalBaseName =
+      file.name.replace(
+        /\.[^.]+$/,
+        ''
+      ) || 'midway-photo';
+
+    return {
+      action: 'uploadPhoto',
+
+      fileName:
+        originalBaseName + '.jpg',
+
+      mimeType:
+        'image/jpeg',
+
+      base64:
+        dataURL.split(',')[1]
+    };
+  }
+
+  /* =========================================================
+     SEND PHOTO TO GOOGLE DRIVE
+     ========================================================= */
+
+  async function uploadPhotoToDrive(file) {
+    const payload =
+      await preparePhotoForUpload(file);
+
+    const response =
+      await fetch(
+        DRIVE_UPLOAD_URL,
+        {
+          method: 'POST',
+
+          redirect: 'follow',
+
+          headers: {
+            'Content-Type':
+              'text/plain;charset=utf-8'
+          },
+
+          body:
+            JSON.stringify(payload)
+        }
+      );
+
+    const result =
+      await response.json();
+
+    if (!result.ok) {
+      throw new Error(
+        result.error ||
+        'Google Drive upload failed.'
+      );
+    }
+
+    return result;
+  }
+
+  /* =========================================================
+     USER SELECTS PHOTOS
+     ========================================================= */
+
+  fileInput.addEventListener(
+    'change',
+    async () => {
+      const files =
+        Array.from(
+          fileInput.files || []
+        ).filter(
+          file =>
+            file.type.startsWith('image/')
+        );
+
+      if (!files.length) return;
+
+      uploadButton.disabled = true;
+      galleryAdd.disabled = true;
+
+      let successfulUploads = 0;
+      let failedUploads = 0;
+
+      for (
+        let index = 0;
+        index < files.length;
+        index++
+      ) {
+        const file =
+          files[index];
+
+        try {
+          showStatus(
+            `UPLOADING PHOTO ${index + 1} OF ${files.length}...`,
+            10000
+          );
+
+          /*
+             Wait until Google Drive confirms
+             that THIS photo was saved.
+          */
+
+          await uploadPhotoToDrive(file);
+
+          /*
+             Once saved to Drive, also create
+             a local URL so it appears instantly
+             in this user's gallery.
+          */
+
+          const url =
+            URL.createObjectURL(file);
+
+          objectUrls.push(url);
+
+          selectedPhotos.push({
+            file,
+            url
+          });
+
+          successfulUploads++;
+
+        } catch (error) {
+          console.error(
+            'Photo upload failed:',
+            error
+          );
+
+          failedUploads++;
+        }
+      }
+
+      /* Reset the phone's file picker */
+
+      fileInput.value = '';
+
+      uploadButton.disabled = false;
+      galleryAdd.disabled = false;
+
+      /* Refresh gallery data */
+
+      renderGallery();
+
+      /* Tell guest what happened */
+
+      if (
+        successfulUploads &&
+        !failedUploads
+      ) {
+        showStatus(
+          successfulUploads === 1
+            ? 'PHOTO RECEIVED'
+            : `${successfulUploads} PHOTOS RECEIVED`,
+          3200
+        );
+
+      } else if (
+        successfulUploads &&
+        failedUploads
+      ) {
+        showStatus(
+          `${successfulUploads} SAVED • ${failedUploads} FAILED`,
+          4200
+        );
+
+      } else {
+        showStatus(
+          'UPLOAD FAILED. PLEASE TRY AGAIN.',
+          4200
+        );
+      }
+    }
+  );
+
+  /* =========================================================
+     LIGHTBOX CONTROLS
+     ========================================================= */
+
+  lightboxClose.addEventListener(
+    'click',
+    closeLightbox
+  );
+
+  /*
+     Tap the dark area around the photo
+     to close it.
+  */
+
+  lightbox.addEventListener(
+    'click',
+    event => {
+      if (event.target === lightbox) {
+        closeLightbox();
+      }
+    }
+  );
+
+  /* =========================================================
+     TAP OUTSIDE DIALOG TO CLOSE
+     ========================================================= */
+
+  parlour.addEventListener(
+    'click',
+    event => {
+      if (event.target === parlour) {
+        closeParlour();
+      }
+    }
+  );
+
+  gallery.addEventListener(
+    'click',
+    event => {
+      if (event.target === gallery) {
+        closeGallery();
+      }
+    }
+  );
+
+  /* =========================================================
+     CLEAN UP TEMPORARY PHOTO URLS
+     ========================================================= */
+
+  window.addEventListener(
+    'pagehide',
+    () => {
+      objectUrls.forEach(
+        url =>
+          URL.revokeObjectURL(url)
+      );
+    }
+  );
 })();
