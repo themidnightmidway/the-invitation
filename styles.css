@@ -234,19 +234,39 @@ button { -webkit-tap-highlight-color: transparent; }
 }
 .intro-vignette { position:absolute; inset:0; box-shadow: inset 0 0 170px 70px #000; pointer-events:none; }
 .intro-card { position:relative; z-index:2; text-align:center; padding:32px; text-shadow:0 3px 2px #000; }
-.intro-kicker { letter-spacing:.34em; font-size:clamp(11px, 2.7vw, 16px); margin:0 0 18px; color:#c5a673; font-family: 'IM Fell English SC', serif; }
-.intro h1 { margin:0; font-size:clamp(46px, 12vw, 92px); line-height:.82; letter-spacing:.02em; color:#d9c6a0; font-weight:900; font-family: 'Rye', serif;
-font-weight: 400; }
-.intro h1 span { color:#7b161b; text-shadow:0 2px 0 #220507, 0 0 22px rgba(136,20,24,.28); }
+.intro-kicker {
+  margin: 0 0 18px;
+  color: #c5a673;
+  font-family: Baskerville, Georgia, serif;
+  font-size: clamp(11px, 2.7vw, 16px);
+  font-variant: small-caps;
+  letter-spacing: .34em;
+}
+.intro h1 {
+  margin: 0;
+  color: #d9c6a0;
+  font-family: Copperplate, "Copperplate Gothic Light", serif;
+  font-size: clamp(46px, 12vw, 92px);
+  font-weight: 700;
+  line-height: .82;
+  letter-spacing: .02em;
+.intro h1 span {
+  color: #7b161b;
+  text-shadow:
+    0 2px 0 #220507,
+    0 0 22px rgba(136,20,24,.28);
+}
 .intro-tagline {
   margin: 14px auto 0;
   max-width: 28ch;
   color: #d4bc91;
+  font-family: "American Typewriter", "Courier New", monospace;
   font-size: clamp(14px, 3.2vw, 19px);
   line-height: 1.25;
   letter-spacing: .03em;
-  text-shadow: 0 2px 0 #120906, 0 0 18px rgba(196,134,42,.14);
-  font-family: 'Special Elite', serif;
+  text-shadow:
+    0 2px 0 #120906,
+    0 0 18px rgba(196,134,42,.14);
 }
 
 .marquee-tagline {
@@ -271,20 +291,23 @@ font-weight: 400; }
 }
 
 .enter-button {
-  margin-top:34px;
-  min-width:220px;
-  border:1px solid #9c713d;
-  padding:15px 22px;
-  color:#e0cfa8;
-  background:linear-gradient(#1a110d,#0b0806);
-  letter-spacing:.12em;
-  font-weight:700;
-  box-shadow:inset 0 0 0 3px #090604, 0 0 24px rgba(183,138,73,.12);
-  cursor:pointer;
-  font-family: 'Rye', serif;
-  font-weight: 400;
+  margin-top: 34px;
+  min-width: 220px;
+  border: 1px solid #9c713d;
+  padding: 15px 22px;
+  color: #e0cfa8;
+  background: linear-gradient(#1a110d, #0b0806);
+  font-family: Copperplate, "Copperplate Gothic Light", serif;
+  font-weight: 700;
+  letter-spacing: .12em;
+  box-shadow:
+    inset 0 0 0 3px #090604,
+    0 0 24px rgba(183,138,73,.12);
+  cursor: pointer;
 }
-.enter-button:hover { filter:brightness(1.15); }
+.enter-button:hover {
+  filter: brightness(1.15);
+}
 
 .midway-dialog {
   width:min(92vw, 560px);
