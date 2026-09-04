@@ -351,3 +351,29 @@
 
   -webkit-tap-highlight-color: transparent;
 }
+.picture-gallery-more[hidden] {
+  display: none !important;
+}
+
+.picture-gallery-more {
+  display: block;
+  margin: 18px auto 8px;
+  padding: 12px 20px;
+
+  border: 1px solid #a37a43;
+
+  background: #0b0705;
+  color: #e2c997;
+
+  font-family: "IM Fell English SC", serif;
+  font-size: 16px;
+  letter-spacing: .06em;
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.picture-gallery-more:disabled {
+  opacity: .55;
+}
