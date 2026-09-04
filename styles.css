@@ -639,7 +639,7 @@ fieldset { border:1px solid rgba(233,207,151,.35); padding:13px 14px 8px; margin
   font-size:clamp(20px, 4vw, 40px);
   font-weight:900;
   line-height:1;
-  transform:rotate(-8deg) translateY(-2%);
+   transform:translate(4%, -8%) rotate(-8deg);
   text-shadow:0 1px 0 rgba(255,228,174,.28);
 }
 
@@ -647,7 +647,7 @@ fieldset { border:1px solid rgba(233,207,151,.35); padding:13px 14px 8px; margin
    Local ticket coordinates: x544 y525. */
 .ticket-guest-field {
   left:51.0319%;
-  top:77.7778%;
+  top:77.3%;
   width:15.9475%;
   height:6.9630%;
 }
