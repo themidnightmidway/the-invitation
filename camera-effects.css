@@ -1,0 +1,106 @@
+/* =========================================================
+   MIDNIGHT MIDWAY CAMERA EFFECTS
+   Camera position comes directly from TMM(invite)(8).psd.
+   ========================================================= */
+
+#art-camera {
+  transform-origin: 50% 58%;
+  will-change: transform, filter;
+}
+
+/* A short, occasional physical camera jiggle. JS adds this class randomly. */
+#art-camera.camera-jiggle {
+  animation: camera-jiggle .46s cubic-bezier(.2,.8,.25,1);
+}
+
+@keyframes camera-jiggle {
+  0%, 100% { transform: translate(0,0) rotate(0deg); }
+  18%      { transform: translate(-3px,1px) rotate(-.65deg); }
+  35%      { transform: translate(3px,-2px) rotate(.55deg); }
+  52%      { transform: translate(-2px,-1px) rotate(-.38deg); }
+  70%      { transform: translate(2px,1px) rotate(.28deg); }
+  86%      { transform: translate(-1px,0) rotate(-.12deg); }
+}
+
+/* Exact flash guide from the PSD:
+   x 754, y 1657, w 46, h 51 on the 1080 x 1920 stage. */
+#cameraFlash {
+  position:absolute;
+  left:754px;
+  top:1657px;
+  width:46px;
+  height:51px;
+  z-index:31;
+  pointer-events:none;
+  opacity:0;
+  border-radius:50%;
+  transform-origin:center;
+  transform:scale(.3);
+  mix-blend-mode:screen;
+  background:
+    radial-gradient(circle at 50% 50%,
+      rgba(255,255,255,1) 0 11%,
+      rgba(255,248,204,.98) 16%,
+      rgba(255,214,108,.92) 29%,
+      rgba(255,164,44,.58) 46%,
+      rgba(255,126,25,.22) 61%,
+      rgba(255,126,25,0) 76%);
+  filter:
+    brightness(1.2)
+    drop-shadow(0 0 8px rgba(255,244,195,.95))
+    drop-shadow(0 0 18px rgba(255,190,66,.72));
+  will-change:opacity,transform,filter;
+}
+
+/* Larger bloom around the actual bulb/reflector. */
+#cameraFlash::after {
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:190px;
+  height:190px;
+  transform:translate(-50%,-50%) scale(.25);
+  border-radius:50%;
+  opacity:0;
+  background:
+    radial-gradient(circle,
+      rgba(255,255,244,.72) 0 5%,
+      rgba(255,226,139,.44) 18%,
+      rgba(255,171,59,.20) 38%,
+      rgba(255,136,29,.08) 55%,
+      transparent 72%);
+  filter:blur(1px);
+  will-change:opacity,transform;
+}
+
+#cameraFlash.is-flashing {
+  animation: camera-flash-pop .48s ease-out;
+}
+
+#cameraFlash.is-flashing::after {
+  animation: camera-flash-bloom .48s ease-out;
+}
+
+@keyframes camera-flash-pop {
+  0%   { opacity:0; transform:scale(.28); filter:brightness(1); }
+  7%   { opacity:1; transform:scale(1.7); filter:brightness(2.5); }
+  18%  { opacity:.96; transform:scale(1.38); filter:brightness(2.1); }
+  42%  { opacity:.36; transform:scale(1.05); filter:brightness(1.5); }
+  100% { opacity:0; transform:scale(.7); filter:brightness(1); }
+}
+
+@keyframes camera-flash-bloom {
+  0%   { opacity:0; transform:translate(-50%,-50%) scale(.25); }
+  8%   { opacity:1; transform:translate(-50%,-50%) scale(1.1); }
+  27%  { opacity:.48; transform:translate(-50%,-50%) scale(1.35); }
+  100% { opacity:0; transform:translate(-50%,-50%) scale(1.55); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #art-camera.camera-jiggle,
+  #cameraFlash.is-flashing,
+  #cameraFlash.is-flashing::after {
+    animation:none !important;
+  }
+}
