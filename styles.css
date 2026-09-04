@@ -935,8 +935,7 @@ html.touch-device .rsvp-close:hover {
     outline: 2px solid #e4c98f;
     outline-offset: 2px;
   }
-}
-/* RSVP name field: let the printed ticket artwork be the box */
+/* Force the live Names field to use only the printed ticket artwork */
 #rsvpForm .ticket-name-field input,
 #rsvpForm .ticket-name-field input:hover,
 #rsvpForm .ticket-name-field input:focus,
