@@ -377,3 +377,12 @@
 .picture-gallery-more:disabled {
   opacity: .55;
 }
+.picture-gallery-instruction {
+  margin: 4px 0 18px;
+  text-align: center;
+  font-family: "IM Fell English SC", serif;
+  font-size: 14px;
+  letter-spacing: .04em;
+  color: #c8ad7b;
+  opacity: .8;
+}
