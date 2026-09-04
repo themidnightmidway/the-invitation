@@ -10,7 +10,7 @@
    ========================================================= */
 
 const DRIVE_UPLOAD_URL =
-  'https://script.google.com/macros/s/AKfycbwZadhWcQTpWbepfbPngKbl10JpbMzLRT77_gD5bbUsG1nkxv5F1qU8JKmemfIiZnk52g/exec';
+  'https://script.google.com/macros/s/AKfycbxClyEV5G7pue1xklsnVGQtyXlA3t-2hLqmdOelRdUrFh15v5mO1cdoF_xf_GUVVfam0Q/exec';
 
 (() => {
   const camera = document.getElementById('art-camera');
