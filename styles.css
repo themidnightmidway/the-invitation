@@ -936,3 +936,16 @@ html.touch-device .rsvp-close:hover {
     outline-offset: 2px;
   }
 }
+/* RSVP name field: let the printed ticket artwork be the box */
+#rsvpForm .ticket-name-field input,
+#rsvpForm .ticket-name-field input:hover,
+#rsvpForm .ticket-name-field input:focus,
+#rsvpForm .ticket-name-field input:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
