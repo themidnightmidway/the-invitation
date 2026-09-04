@@ -126,7 +126,26 @@ dialogs.forEach(dialog => {
 
 const rsvpForm = document.getElementById('rsvpForm');
 const rsvpSuccess = document.getElementById('rsvpSuccess');
-const guestCount = document.getElementById('guestCount');
+const rsvpNames = document.getElementById('rsvpNames');
+
+rsvpNames.addEventListener('input', () => {
+  if (guestCount.disabled) return;
+
+  const names = rsvpNames.value.trim();
+
+  if (!names) {
+    guestCount.value = '';
+    return;
+  }
+
+  const people = names
+    .split(/\s*(?:,|&|\band\b)\s*/i)
+    .filter(name => name.trim());
+
+  const numberOfGuests = Math.min(10, people.length);
+
+  guestCount.value = String(numberOfGuests);
+});
 const guestField = document.querySelector('.ticket-guest-field');
 
 // Always start a fresh page load with the success stamp hidden.
