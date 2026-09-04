@@ -1,13 +1,4 @@
 (() => {
-  /* =======================================================
-     MIDNIGHT MIDWAY
-     Tap-to-swell + flip-card behavior
-
-     Replace your existing poster-swell.js with this file.
-     The main script.js is NOT changed, so your RSVP /exec
-     URL remains untouched.
-     ======================================================= */
-
   const poster = document.getElementById('poster');
   if (!poster) return;
 
@@ -25,72 +16,63 @@
     legend: document.getElementById('art-legend')
   };
 
-  /* -------------------------------------------------------
-     Create the two reverse sides in HTML.
-     No additional image assets are needed.
-     ------------------------------------------------------- */
-
-  function copyPhotoshopPosition(front, back) {
-    ['--x', '--y', '--w', '--h'].forEach(prop => {
-      back.style.setProperty(prop, front.style.getPropertyValue(prop));
-    });
-  }
-
-  function makeBack(id, front, html) {
-    const back = document.createElement('div');
-    back.id = id;
-    back.className = 'flip-card-back';
-    copyPhotoshopPosition(front, back);
-    back.innerHTML = `<div class="flip-card-copy">${html}</div>`;
-    poster.appendChild(back);
-    return back;
-  }
-
-  const costumeBack = makeBack(
-    'costume-card-back',
-    ART.costumes,
-    `
-      <h3>Dark Carnival Attire</h3>
-      <div class="attire-list">
-        Vintage Carnival • Ringmaster<br>
-        Cabaret • Sideshow
-      </div>
-      <p class="required">Costumes Required</p>
-      <p class="disclaimer">
-        *Feel free to also wear a costume you're comfortable in.
-      </p>
-    `
-  );
-
-  const legendBack = makeBack(
-    'legend-card-back',
-    ART.legend,
-    `
-      <h3>The Legend</h3>
-      <div class="legend-story">
-        <p>
-          They say every carnival has a midway, the stretch of lights and noise
-          where games, booths, prizes, food, and rides crowd together after dark.
-        </p>
-        <p>
-          But old stories say the midway is more than a place. Once the bulbs glow
-          and the music starts, the outside world begins to feel very far away.
-        </p>
-        <p>
-          Hours pass. Luck changes hands. And the longer the lights stay on, the
-          more it feels like somewhere you were always meant to find.
-        </p>
-      </div>
-    `
-  );
-
-  const backs = {
-    costumes: costumeBack,
-    legend: legendBack
+  // The two flip wrappers use the exact front/back bounds from TMM(invite)(6).psd.
+  // That lets the illustrated back PNGs line up with the front artwork without
+  // forcing either image into a fake CSS card shape.
+  const FLIP_DATA = {
+    costumes: {
+      id: 'costume-flip-stage',
+      x: 705, y: 621, w: 424, h: 585,
+      scale: 1.66,
+      front: { src: 'assets/costumes.png', x: 57, y: 22, w: 355, h: 563 },
+      back:  { src: 'assets/costume-back.png', x: 0, y: 0, w: 424, h: 584 }
+    },
+    legend: {
+      id: 'legend-flip-stage',
+      x: 403, y: 1405, w: 366, h: 478,
+      scale: 1.84,
+      front: { src: 'assets/legend.png', x: 14, y: 0, w: 349, h: 478 },
+      back:  { src: 'assets/legend-back.png', x: 0, y: 4, w: 366, h: 471 }
+    }
   };
 
-  /* Mark only the informational hotspots.
-     RSVP is intentionally NOT included. */
+  function makeFace(face, className) {
+    const img = document.createElement('img');
+    img.className = `flip-face ${className}`;
+    img.src = face.src;
+    img.alt = '';
+    img.draggable = false;
+    img.style.left = `${face.x}px`;
+    img.style.top = `${face.y}px`;
+    img.style.width = `${face.w}px`;
+    img.style.height = `${face.h}px`;
+    return img;
+  }
+
+  function makeFlipStage(key, data) {
+    const stage = document.createElement('div');
+    stage.id = data.id;
+    stage.className = `poster-flip-stage poster-flip-${key}`;
+    stage.style.left = `${data.x}px`;
+    stage.style.top = `${data.y}px`;
+    stage.style.width = `${data.w}px`;
+    stage.style.height = `${data.h}px`;
+    stage.style.setProperty('--flip-scale', data.scale);
+
+    const inner = document.createElement('div');
+    inner.className = 'poster-flip-inner';
+    inner.appendChild(makeFace(data.front, 'flip-face-front'));
+    inner.appendChild(makeFace(data.back, 'flip-face-back'));
+    stage.appendChild(inner);
+    poster.appendChild(stage);
+    return stage;
+  }
+
+  const FLIP = {
+    costumes: makeFlipStage('costumes', FLIP_DATA.costumes),
+    legend: makeFlipStage('legend', FLIP_DATA.legend)
+  };
+
   Object.values(HOTSPOTS).forEach(hotspot => {
     if (!hotspot) return;
     hotspot.dataset.swell = 'true';
@@ -102,91 +84,75 @@
   let collapseTimer = null;
 
   function clearTimers() {
-    if (flipTimer) {
-      clearTimeout(flipTimer);
-      flipTimer = null;
-    }
-    if (collapseTimer) {
-      clearTimeout(collapseTimer);
-      collapseTimer = null;
-    }
+    if (flipTimer) clearTimeout(flipTimer);
+    if (collapseTimer) clearTimeout(collapseTimer);
+    flipTimer = null;
+    collapseTimer = null;
   }
 
-  function finishCollapse(key) {
-    const art = ART[key];
-    const back = backs[key];
-
-    art?.classList.remove('is-expanded', 'is-flipped');
-    back?.classList.remove('is-expanded', 'is-flipped');
-
+  function finishFlipCollapse(key) {
+    const stage = FLIP[key];
+    if (!stage) return;
+    stage.classList.remove('is-expanded', 'is-flipped');
+    stage.classList.remove('is-active');
+    ART[key]?.classList.remove('flip-source-hidden');
     HOTSPOTS[key]?.setAttribute('aria-expanded', 'false');
-
     if (activeKey === key) activeKey = null;
   }
 
   function collapse(key = activeKey, immediate = false) {
     if (!key) return;
-
     clearTimers();
 
-    const art = ART[key];
-    const back = backs[key];
-
     if (key === 'costumes' || key === 'legend') {
-      /* Turn the card face-up first... */
-      art?.classList.remove('is-flipped');
-      back?.classList.remove('is-flipped');
+      const stage = FLIP[key];
+      stage?.classList.remove('is-flipped');
 
-      /* ...then let it settle back into the collage. */
       if (immediate) {
-        finishCollapse(key);
+        finishFlipCollapse(key);
       } else {
-        collapseTimer = setTimeout(() => finishCollapse(key), 430);
+        collapseTimer = setTimeout(() => finishFlipCollapse(key), 430);
       }
-    } else {
-      finishCollapse(key);
+      return;
     }
+
+    ART[key]?.classList.remove('is-expanded');
+    HOTSPOTS[key]?.setAttribute('aria-expanded', 'false');
+    if (activeKey === key) activeKey = null;
   }
 
   function expandSimple(key) {
     clearTimers();
-
-    if (activeKey && activeKey !== key) {
-      collapse(activeKey, true);
-    }
+    if (activeKey && activeKey !== key) collapse(activeKey, true);
 
     const art = ART[key];
     if (!art) return;
-
     activeKey = key;
     art.classList.add('is-expanded');
     HOTSPOTS[key]?.setAttribute('aria-expanded', 'true');
   }
 
-  function expandAndFlip(key) {
+  function expandFlip(key) {
     clearTimers();
+    if (activeKey && activeKey !== key) collapse(activeKey, true);
 
-    if (activeKey && activeKey !== key) {
-      collapse(activeKey, true);
-    }
-
-    const art = ART[key];
-    const back = backs[key];
-    if (!art || !back) return;
+    const stage = FLIP[key];
+    const source = ART[key];
+    if (!stage || !source) return;
 
     activeKey = key;
+    source.classList.add('flip-source-hidden');
+    stage.classList.add('is-active');
 
-    /* First the physical object swells in its original spot. */
-    art.classList.add('is-expanded');
-    back.classList.add('is-expanded');
-    HOTSPOTS[key]?.setAttribute('aria-expanded', 'true');
+    requestAnimationFrame(() => {
+      stage.classList.add('is-expanded');
+      HOTSPOTS[key]?.setAttribute('aria-expanded', 'true');
+    });
 
-    /* Then it turns over. */
+    // Swell first, then turn over like a physical tag/handbill.
     flipTimer = setTimeout(() => {
-      if (activeKey !== key) return;
-      art.classList.add('is-flipped');
-      back.classList.add('is-flipped');
-    }, 270);
+      if (activeKey === key) stage.classList.add('is-flipped');
+    }, 280);
   }
 
   function toggle(key) {
@@ -196,49 +162,31 @@
     }
 
     if (key === 'costumes' || key === 'legend') {
-      expandAndFlip(key);
+      expandFlip(key);
     } else {
       expandSimple(key);
     }
   }
 
-  /* -------------------------------------------------------
-     Stop the original informational dialogs from opening.
-     Capture phase runs before the listeners in main script.js.
-     RSVP is untouched.
-     ------------------------------------------------------- */
-
+  // Capture phase prevents the older informational dialog listeners in the
+  // main script.js from firing. RSVP is not included here and stays unchanged.
   document.addEventListener('click', event => {
     const hotspot = event.target.closest?.('.hotspot[data-swell="true"]');
 
     if (hotspot) {
       const key = Object.keys(HOTSPOTS).find(name => HOTSPOTS[name] === hotspot);
       if (!key) return;
-
       event.preventDefault();
       event.stopImmediatePropagation();
       toggle(key);
       return;
     }
 
-    /* Tapping the visible BACK itself turns it face-up and shrinks it. */
-    if (
-      event.target.closest?.('#costume-card-back') ||
-      event.target.closest?.('#legend-card-back')
-    ) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      collapse();
-      return;
-    }
-
-    /* Any other click/tap returns the active card/poster to normal. */
+    // Clicking/tapping anywhere else returns the active piece to the collage.
     if (activeKey) collapse();
   }, true);
 
   document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && activeKey) {
-      collapse();
-    }
+    if (event.key === 'Escape' && activeKey) collapse();
   });
 })();
