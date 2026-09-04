@@ -163,7 +163,7 @@ const DRIVE_UPLOAD_URL =
     />
   `;
 
-  document.body.appendChild(lightbox);
+  gallery.appendChild(lightbox);
 
   /* =========================================================
      ELEMENT REFERENCES
