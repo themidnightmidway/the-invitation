@@ -142,7 +142,7 @@ const DRIVE_UPLOAD_URL =
      CREATE LARGE-PHOTO LIGHTBOX
      ========================================================= */
 
-  const lightbox = document.createElement('div');
+  const lightbox = document.createElement('dialog');
 
   lightbox.className = 'picture-lightbox';
   lightbox.hidden = true;
@@ -163,7 +163,7 @@ const DRIVE_UPLOAD_URL =
     />
   `;
 
-  gallery.appendChild(lightbox);
+  document.body.appendChild(lightbox);
 
   /* =========================================================
      ELEMENT REFERENCES
@@ -408,16 +408,21 @@ async function renderGallery(
           image
         );
 
-        button.addEventListener(
-          'click',
-          () => {
-            lightboxImage.src =
-              photo.fullUrl;
+button.addEventListener(
+  'click',
+  () => {
+    lightboxImage.src =
+      photo.fullUrl;
 
-            lightbox.hidden =
-              false;
-          }
-        );
+    lightbox.hidden = false;
+
+    if (typeof lightbox.showModal === 'function') {
+      lightbox.showModal();
+    } else {
+      lightbox.setAttribute('open', '');
+    }
+  }
+);
 
         galleryGrid.appendChild(
           button
@@ -524,11 +529,19 @@ async function renderGallery(
      OPEN / CLOSE LARGE PHOTO
      ========================================================= */
 
-  function closeLightbox() {
-    lightbox.hidden = true;
-
-    lightboxImage.removeAttribute('src');
+function closeLightbox() {
+  if (
+    typeof lightbox.close === 'function' &&
+    lightbox.open
+  ) {
+    lightbox.close();
+  } else {
+    lightbox.removeAttribute('open');
   }
+
+  lightbox.hidden = true;
+  lightboxImage.removeAttribute('src');
+}
 
   /* =========================================================
      CAMERA
