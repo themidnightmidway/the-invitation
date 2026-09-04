@@ -935,16 +935,24 @@ html.touch-device .rsvp-close:hover {
     outline: 2px solid #e4c98f;
     outline-offset: 2px;
   }
-/* Force the live Names field to use only the printed ticket artwork */
+/* FINAL RSVP NAME FIELD OVERRIDE */
 #rsvpForm .ticket-name-field input,
 #rsvpForm .ticket-name-field input:hover,
 #rsvpForm .ticket-name-field input:focus,
-#rsvpForm .ticket-name-field input:active {
+#rsvpForm .ticket-name-field input:active,
+#rsvpForm .ticket-name-field input:autofill,
+#rsvpForm .ticket-name-field input:-webkit-autofill {
   background: transparent !important;
   background-color: transparent !important;
-  border: 0 !important;
-  outline: 0 !important;
+  border: none !important;
+  outline: none !important;
   box-shadow: none !important;
+
   -webkit-appearance: none !important;
   appearance: none !important;
+
+  color: #1b0d08 !important;
+  -webkit-text-fill-color: #1b0d08 !important;
+
+  padding: 0 2.2% !important;
 }
