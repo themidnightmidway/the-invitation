@@ -110,7 +110,7 @@ const DRIVE_UPLOAD_URL =
 </p>
 
 <p class="picture-gallery-instruction">
-  Press each picture to expand.
+  Tap each picture to expand.
 </p>
 
       <div
