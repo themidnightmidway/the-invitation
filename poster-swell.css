@@ -1,0 +1,71 @@
+/* Midnight Midway: tap-to-swell informational posters
+   Loaded AFTER styles.css so this state wins over the normal hover/press rules. */
+
+.interactive-art.is-expanded {
+  z-index: 80 !important;
+  filter:
+    brightness(1.035)
+    drop-shadow(0 24px 20px rgba(0, 0, 0, .72))
+    drop-shadow(0 0 14px rgba(190, 139, 67, .12));
+  transition:
+    transform 320ms cubic-bezier(.16, .86, .22, 1),
+    filter 260ms ease,
+    z-index 0s linear 0s;
+}
+
+/* Each poster grows around its OWN center, so it stays in its original spot. */
+#art-event.is-expanded {
+  transform: scale(1.30);
+}
+
+#art-costumes.is-expanded {
+  transform: scale(1.48);
+}
+
+#art-awaits.is-expanded {
+  transform: scale(1.48);
+}
+
+#art-legend.is-expanded {
+  transform: scale(1.48);
+}
+
+/* The expanded state must beat the old hover/focus/press transforms. */
+.interactive-art.is-expanded.is-hovered,
+.interactive-art.is-expanded.is-focused,
+.interactive-art.is-expanded.is-pressed {
+  filter:
+    brightness(1.035)
+    drop-shadow(0 24px 20px rgba(0, 0, 0, .72))
+    drop-shadow(0 0 14px rgba(190, 139, 67, .12));
+}
+
+#art-event.is-expanded.is-hovered,
+#art-event.is-expanded.is-focused,
+#art-event.is-expanded.is-pressed {
+  transform: scale(1.30);
+}
+
+#art-costumes.is-expanded.is-hovered,
+#art-costumes.is-expanded.is-focused,
+#art-costumes.is-expanded.is-pressed,
+#art-awaits.is-expanded.is-hovered,
+#art-awaits.is-expanded.is-focused,
+#art-awaits.is-expanded.is-pressed,
+#art-legend.is-expanded.is-hovered,
+#art-legend.is-expanded.is-focused,
+#art-legend.is-expanded.is-pressed {
+  transform: scale(1.48);
+}
+
+/* On touchscreens the invisible original hotspot should not show any cue. */
+html.touch-device .hotspot[data-swell="true"]::after {
+  display: none !important;
+}
+
+/* Reduced-motion users still get the larger readable state, just without animation. */
+@media (prefers-reduced-motion: reduce) {
+  .interactive-art.is-expanded {
+    transition: none !important;
+  }
+}
