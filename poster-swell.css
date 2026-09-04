@@ -131,7 +131,7 @@ html.touch-device .hotspot[data-swell="true"]::after {
 }
 
 #art-rsvp.rsvp-idle-pulse {
-  animation: rsvpIdlePulse 8s ease-in-out infinite;
+  animation: rsvpIdlePulse 5.2s ease-in-out infinite;
 }
 
 @keyframes rsvpIdlePulse {
