@@ -105,9 +105,13 @@ const DRIVE_UPLOAD_URL =
         The Picture Parlour
       </h2>
 
-      <p class="picture-gallery-subtitle">
-        Caught beneath the carnival lights.
-      </p>
+     <p class="picture-gallery-subtitle">
+  Caught beneath the carnival lights.
+</p>
+
+<p class="picture-gallery-instruction">
+  Press each picture to expand.
+</p>
 
       <div
   class="picture-gallery-grid"
