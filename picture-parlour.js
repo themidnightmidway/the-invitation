@@ -7,8 +7,10 @@
    ========================================================= */
 
 (() => {
-  const camera = document.getElementById('art-camera');
-  if (!camera) return;
+const camera = document.getElementById('art-camera');
+const cameraHotspot = document.querySelector('.hotspot-camera');
+
+if (!camera || !cameraHotspot) return;
 
   const selectedPhotos = [];
   const objectUrls = [];
@@ -175,23 +177,11 @@
     }
   }
 
-  camera.setAttribute('role', 'button');
-  camera.setAttribute('tabindex', '0');
-  camera.setAttribute('aria-label', 'Open The Picture Parlour');
-
-  camera.addEventListener('click', (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    openParlour();
-  });
-
-  camera.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      openParlour();
-    }
-  });
-
+cameraHotspot.addEventListener('click', (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  openParlour();
+});
   uploadButton.addEventListener('click', () => fileInput.click());
 
   galleryButton.addEventListener('click', openGallery);
