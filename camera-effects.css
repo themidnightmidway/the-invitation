@@ -6,6 +6,19 @@
 #art-camera {
   transform-origin: 50% 58%;
   will-change: transform, filter;
+  transition: transform .35s ease;
+}
+/* One-time automatic swells when entering the Midway */
+#art-camera.camera-intro-swell {
+  animation: camera-intro-swell 1.05s cubic-bezier(.22,.8,.24,1);
+}
+
+@keyframes camera-intro-swell {
+  0%   { transform: scale(1); }
+  18%  { transform: scale(1.02); }
+  42%  { transform: scale(1.12); }
+  68%  { transform: scale(1.04); }
+  100% { transform: scale(1); }
 }
 
 /* A short, occasional physical camera jiggle. JS adds this class randomly. */
