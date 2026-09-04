@@ -190,3 +190,117 @@
     if (event.key === 'Escape' && activeKey) collapse();
   });
 })();
+/* =========================================
+   CLICKABLE HINTS + RSVP PULSE
+   Add this at the very bottom of poster-swell.js
+========================================= */
+(() => {
+  const enterButton = document.getElementById('enterButton');
+  const intro = document.getElementById('intro');
+
+  const eventArt = document.getElementById('art-event');
+  const costumesArt = document.getElementById('art-costumes');
+  const rsvpArt = document.getElementById('art-rsvp');
+  const awaitsArt = document.getElementById('art-awaits');
+  const legendArt = document.getElementById('art-legend');
+
+  const clickableArtifacts = [
+    eventArt,
+    costumesArt,
+    rsvpArt,
+    awaitsArt,
+    legendArt
+  ].filter(Boolean);
+
+  if (rsvpArt) {
+    rsvpArt.classList.add('rsvp-idle-pulse');
+  }
+
+  let hintShown = false;
+
+  function buildHint() {
+    let hint = document.getElementById('artifactHint');
+
+    if (hint) return hint;
+
+    hint = document.createElement('div');
+    hint.id = 'artifactHint';
+    hint.className = 'artifact-hint';
+    hint.textContent = 'Tap the artifacts. Some have secrets.';
+    document.body.appendChild(hint);
+
+    return hint;
+  }
+
+  function showHint() {
+    const hint = buildHint();
+
+    hint.classList.add('is-visible');
+
+    setTimeout(() => {
+      hint.classList.remove('is-visible');
+    }, 4200);
+  }
+
+  function peekArtifact(el, delay = 0) {
+    if (!el) return;
+
+    setTimeout(() => {
+      el.classList.remove('guide-peek');
+
+      requestAnimationFrame(() => {
+        el.classList.add('guide-peek');
+
+        setTimeout(() => {
+          el.classList.remove('guide-peek');
+        }, 820);
+      });
+    }, delay);
+  }
+
+  function runDiscoverSequence() {
+    peekArtifact(eventArt, 0);
+    peekArtifact(costumesArt, 320);
+    peekArtifact(rsvpArt, 640);
+    peekArtifact(awaitsArt, 960);
+    peekArtifact(legendArt, 1280);
+  }
+
+  function triggerHintSequence() {
+    if (hintShown) return;
+    hintShown = true;
+
+    showHint();
+
+    setTimeout(() => {
+      runDiscoverSequence();
+    }, 180);
+  }
+
+  if (enterButton) {
+    enterButton.addEventListener('click', () => {
+      setTimeout(() => {
+        triggerHintSequence();
+      }, 850);
+    });
+  }
+
+  /* Fallback in case intro is already gone for some reason */
+  window.addEventListener('load', () => {
+    if (!intro) {
+      setTimeout(triggerHintSequence, 1200);
+      return;
+    }
+
+    const introHidden =
+      intro.hidden ||
+      intro.classList.contains('is-hidden') ||
+      window.getComputedStyle(intro).display === 'none' ||
+      window.getComputedStyle(intro).visibility === 'hidden' ||
+      parseFloat(window.getComputedStyle(intro).opacity) === 0;
+
+    if (introHidden) {
+      setTimeout(triggerHintSequence, 1200);
+    }
+  });
+})();
