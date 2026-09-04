@@ -280,3 +280,74 @@
     transform: none;
   }
 }
+.picture-polaroid {
+  transition:
+    transform 140ms ease,
+    filter 140ms ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.picture-polaroid:active {
+  transform:
+    rotate(var(--tilt, 0deg))
+    scale(1.04);
+
+  filter:
+    brightness(1.04)
+    drop-shadow(0 10px 12px rgba(0, 0, 0, .42));
+}
+
+.picture-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+
+  display: grid;
+  place-items: center;
+
+  padding: 18px;
+
+  background: rgba(0, 0, 0, .93);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.picture-lightbox[hidden] {
+  display: none;
+}
+
+.picture-lightbox img {
+  display: block;
+
+  max-width: 94vw;
+  max-height: 84vh;
+
+  object-fit: contain;
+
+  border: 9px solid #d8c7a4;
+
+  box-shadow:
+    0 20px 48px rgba(0, 0, 0, .86),
+    0 0 18px rgba(185, 138, 73, .10);
+}
+
+.picture-lightbox-close {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+
+  width: 46px;
+  height: 46px;
+
+  border: 1px solid #a37a43;
+  background: #0b0705;
+  color: #e2c997;
+
+  font-size: 30px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+}
