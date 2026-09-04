@@ -31,7 +31,10 @@
     restartClass(camera, 'camera-jiggle');
     window.setTimeout(() => camera.classList.remove('camera-jiggle'), 520);
   }
-
+function swellCamera() {
+  restartClass(camera, 'camera-intro-swell');
+  window.setTimeout(() => camera.classList.remove('camera-intro-swell'), 1100);
+}
   function fireFlash() {
     restartClass(flash, 'is-flashing');
     window.setTimeout(() => flash.classList.remove('is-flashing'), 520);
@@ -60,16 +63,20 @@
   }
 
   function startCameraEffects() {
-    if (started) return;
-    started = true;
+  if (started) return;
+  started = true;
 
-    /* First cues happen sooner, then settle into the slower random rhythm. */
-    window.setTimeout(jiggleCamera, randomDelay(3500, 6500));
-    window.setTimeout(fireFlash, randomDelay(7000, 11000));
+  /* Automatic “artifact” swells right after entering */
+  window.setTimeout(swellCamera, 1400);
+  window.setTimeout(swellCamera, 5200);
 
-    scheduleJiggle();
-    scheduleFlash();
-  }
+  /* Then the slower ambient camera behavior */
+  window.setTimeout(jiggleCamera, randomDelay(8500, 11500));
+  window.setTimeout(fireFlash, randomDelay(10000, 14500));
+
+  scheduleJiggle();
+  scheduleFlash();
+}
 
   if (enterButton) {
     enterButton.addEventListener('click', () => {
