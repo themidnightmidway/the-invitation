@@ -1,5 +1,20 @@
-/* Midnight Midway: tap-to-swell informational posters
-   Loaded AFTER styles.css so this state wins over the normal hover/press rules. */
+/* =========================================================
+   MIDNIGHT MIDWAY
+   Tap-to-swell + flip cards
+   Replace your existing poster-swell.css with this entire file.
+   ========================================================= */
+
+/* Let enlarged cards extend beyond the original 9:16 poster edges.
+   The outer viewport still prevents page scrolling. */
+.poster {
+  overflow: visible !important;
+  perspective: 2200px;
+}
+
+/* ---------------------------------------------------------
+   SIMPLE SWELL CARDS
+   Event + What Awaits still enlarge in place without flipping.
+   --------------------------------------------------------- */
 
 .interactive-art.is-expanded {
   z-index: 80 !important;
@@ -8,64 +23,316 @@
     drop-shadow(0 24px 20px rgba(0, 0, 0, .72))
     drop-shadow(0 0 14px rgba(190, 139, 67, .12));
   transition:
-    transform 320ms cubic-bezier(.16, .86, .22, 1),
+    transform 340ms cubic-bezier(.16, .86, .22, 1),
     filter 260ms ease,
     z-index 0s linear 0s;
 }
 
-/* Each poster grows around its OWN center, so it stays in its original spot. */
+#art-event {
+  transform-origin: 50% 50%;
+}
+
 #art-event.is-expanded {
   transform: scale(1.30);
 }
 
-#art-costumes.is-expanded {
-  transform: scale(1.48);
+#art-awaits {
+  transform-origin: 72% 62%;
 }
 
 #art-awaits.is-expanded {
   transform: scale(1.48);
 }
 
-#art-legend.is-expanded {
-  transform: scale(1.48);
-}
-
-/* The expanded state must beat the old hover/focus/press transforms. */
-.interactive-art.is-expanded.is-hovered,
-.interactive-art.is-expanded.is-focused,
-.interactive-art.is-expanded.is-pressed {
-  filter:
-    brightness(1.035)
-    drop-shadow(0 24px 20px rgba(0, 0, 0, .72))
-    drop-shadow(0 0 14px rgba(190, 139, 67, .12));
-}
-
+/* Preserve expanded state even if an old hover/focus class is present. */
 #art-event.is-expanded.is-hovered,
 #art-event.is-expanded.is-focused,
 #art-event.is-expanded.is-pressed {
   transform: scale(1.30);
 }
 
-#art-costumes.is-expanded.is-hovered,
-#art-costumes.is-expanded.is-focused,
-#art-costumes.is-expanded.is-pressed,
 #art-awaits.is-expanded.is-hovered,
 #art-awaits.is-expanded.is-focused,
-#art-awaits.is-expanded.is-pressed,
-#art-legend.is-expanded.is-hovered,
-#art-legend.is-expanded.is-focused,
-#art-legend.is-expanded.is-pressed {
+#art-awaits.is-expanded.is-pressed {
   transform: scale(1.48);
 }
 
-/* On touchscreens the invisible original hotspot should not show any cue. */
+/* ---------------------------------------------------------
+   FLIP CARDS
+   Costume tag + Legend enlarge in their current location,
+   then turn over like physical paper.
+   --------------------------------------------------------- */
+
+#art-costumes,
+#art-legend,
+.flip-card-back {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  will-change: transform, filter;
+}
+
+/* Keep the costume tag visually anchored near its hanging position
+   while allowing most of the growth to move inward/left. */
+#art-costumes,
+#costume-card-back {
+  transform-origin: 74% 42%;
+}
+
+/* Keep the Legend rooted near the lower portion of its original position
+   so the enlargement grows mainly upward instead of disappearing below
+   the phone screen. */
+#art-legend,
+#legend-card-back {
+  transform-origin: 50% 82%;
+}
+
+/* Fronts at normal size. */
+#art-costumes,
+#art-legend {
+  transition:
+    transform 620ms cubic-bezier(.2, .72, .2, 1),
+    filter 280ms ease;
+}
+
+/* Swell first, while the illustrated front is still facing the guest. */
+#art-costumes.is-expanded {
+  z-index: 82 !important;
+  transform: scale(1.78) rotateY(0deg);
+}
+
+#art-legend.is-expanded {
+  z-index: 82 !important;
+  transform: scale(1.92) rotateY(0deg);
+}
+
+/* Then flip the illustrated front away. */
+#art-costumes.is-expanded.is-flipped {
+  transform: scale(1.78) rotateY(-180deg);
+}
+
+#art-legend.is-expanded.is-flipped {
+  transform: scale(1.92) rotateY(-180deg);
+}
+
+/* Make sure old hover/focus/press transforms cannot override the flip. */
+#art-costumes.is-expanded.is-hovered,
+#art-costumes.is-expanded.is-focused,
+#art-costumes.is-expanded.is-pressed {
+  transform: scale(1.78) rotateY(0deg);
+}
+
+#art-costumes.is-expanded.is-flipped.is-hovered,
+#art-costumes.is-expanded.is-flipped.is-focused,
+#art-costumes.is-expanded.is-flipped.is-pressed {
+  transform: scale(1.78) rotateY(-180deg);
+}
+
+#art-legend.is-expanded.is-hovered,
+#art-legend.is-expanded.is-focused,
+#art-legend.is-expanded.is-pressed {
+  transform: scale(1.92) rotateY(0deg);
+}
+
+#art-legend.is-expanded.is-flipped.is-hovered,
+#art-legend.is-expanded.is-flipped.is-focused,
+#art-legend.is-expanded.is-flipped.is-pressed {
+  transform: scale(1.92) rotateY(-180deg);
+}
+
+/* ---------------------------------------------------------
+   THE BACK OF EACH CARD
+   These are generated by poster-swell.js.
+   They use the exact Photoshop position and dimensions of the front.
+   --------------------------------------------------------- */
+
+.flip-card-back {
+  position: absolute;
+  left: calc(var(--x) * 1px);
+  top: calc(var(--y) * 1px);
+  width: calc(var(--w) * 1px);
+  height: calc(var(--h) * 1px);
+  z-index: 81;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 34px 32px;
+  color: #1b120b;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+
+  background:
+    radial-gradient(circle at 18% 13%, rgba(108, 69, 26, .09), transparent 27%),
+    radial-gradient(circle at 82% 87%, rgba(76, 40, 16, .10), transparent 25%),
+    linear-gradient(rgba(225, 209, 171, .98), rgba(198, 175, 126, .98));
+
+  border: 3px solid #5b321b;
+  outline: 2px solid rgba(113, 21, 25, .52);
+  outline-offset: -12px;
+
+  box-shadow:
+    inset 0 0 0 7px rgba(63, 33, 17, .08),
+    inset 0 0 48px rgba(68, 39, 16, .14),
+    0 24px 22px rgba(0, 0, 0, .70);
+
+  transform: scale(1) rotateY(180deg);
+  transition:
+    transform 620ms cubic-bezier(.2, .72, .2, 1),
+    opacity 80ms linear;
+}
+
+/* Slight worn-paper noise using only CSS, no new image download. */
+.flip-card-back::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .34;
+  background:
+    repeating-linear-gradient(
+      7deg,
+      transparent 0 13px,
+      rgba(64, 37, 19, .026) 13px 14px
+    ),
+    repeating-linear-gradient(
+      93deg,
+      transparent 0 18px,
+      rgba(255, 247, 222, .035) 18px 19px
+    );
+  mix-blend-mode: multiply;
+}
+
+.flip-card-back.is-expanded {
+  opacity: 1;
+}
+
+#costume-card-back.is-expanded {
+  transform: scale(1.78) rotateY(180deg);
+}
+
+#legend-card-back.is-expanded {
+  transform: scale(1.92) rotateY(180deg);
+}
+
+#costume-card-back.is-expanded.is-flipped {
+  z-index: 83;
+  transform: scale(1.78) rotateY(0deg);
+  pointer-events: auto;
+}
+
+#legend-card-back.is-expanded.is-flipped {
+  z-index: 83;
+  transform: scale(1.92) rotateY(0deg);
+  pointer-events: auto;
+}
+
+/* ---------------------------------------------------------
+   BACK-SIDE TYPOGRAPHY
+   --------------------------------------------------------- */
+
+.flip-card-copy {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+.flip-card-back h3 {
+  margin: 0 0 17px;
+  color: #681116;
+  font-family: 'Rye', Georgia, serif;
+  font-size: 27px;
+  line-height: 1.02;
+  font-weight: 400;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+}
+
+.flip-card-back p {
+  margin: 0;
+  font-family: 'IM Fell English SC', Georgia, serif;
+  font-size: 18px;
+  line-height: 1.28;
+}
+
+/* Costume tag back */
+#costume-card-back {
+  padding: 68px 38px 42px;
+  clip-path: polygon(
+    13% 0,
+    87% 0,
+    100% 12%,
+    100% 100%,
+    0 100%,
+    0 12%
+  );
+}
+
+#costume-card-back .attire-list {
+  margin: 13px 0 20px;
+  font-family: 'Special Elite', "American Typewriter", monospace;
+  font-size: 17px;
+  line-height: 1.42;
+}
+
+#costume-card-back .required {
+  margin: 4px 0 12px;
+  color: #681116;
+  font-family: 'Rye', Georgia, serif;
+  font-size: 22px;
+  line-height: 1.08;
+  text-transform: uppercase;
+}
+
+#costume-card-back .disclaimer {
+  margin: 0 auto;
+  max-width: 92%;
+  color: #4e3929;
+  font-family: Georgia, serif;
+  font-size: 11px;
+  line-height: 1.25;
+  font-style: italic;
+}
+
+/* Legend back */
+#legend-card-back {
+  padding: 34px 27px;
+}
+
+#legend-card-back h3 {
+  margin-bottom: 14px;
+  font-size: 25px;
+}
+
+#legend-card-back .legend-story {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 16px;
+  line-height: 1.31;
+  text-align: left;
+}
+
+#legend-card-back .legend-story p {
+  margin: 0 0 11px;
+  font: inherit;
+}
+
+#legend-card-back .legend-story p:last-child {
+  margin-bottom: 0;
+  color: #5f1116;
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------
+   TOUCH / ACCESSIBILITY
+   --------------------------------------------------------- */
+
 html.touch-device .hotspot[data-swell="true"]::after {
   display: none !important;
 }
 
-/* Reduced-motion users still get the larger readable state, just without animation. */
 @media (prefers-reduced-motion: reduce) {
-  .interactive-art.is-expanded {
-    transition: none !important;
+  .interactive-art,
+  .flip-card-back {
+    transition-duration: 1ms !important;
   }
 }
