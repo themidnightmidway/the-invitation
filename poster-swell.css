@@ -187,9 +187,9 @@ html.touch-device .hotspot[data-swell="true"]::after {
 
 .artifact-hint {
   position: fixed;
-  left: 50%;
-  top: calc(env(safe-area-inset-top, 0px) + 16px);
-  transform: translate(-50%, -8px);
+ left: 50%;
+top: 50%;
+transform: translate(-50%, -50%) scale(0.96);
   opacity: 0;
   pointer-events: none;
   z-index: 9999;
