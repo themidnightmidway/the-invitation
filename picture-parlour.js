@@ -646,16 +646,19 @@ const DRIVE_UPLOAD_URL =
 
           successfulUploads++;
 
-        } catch (error) {
-          console.error(
-            'Photo upload failed:',
-            error
-          );
+       } catch (error) {
+  console.error(
+    'Photo upload failed:',
+    error
+  );
 
-          failedUploads++;
-        }
-      }
+  failedUploads++;
 
+  window.alert(
+    'UPLOAD ERROR:\n\n' +
+    (error?.message || String(error))
+  );
+}
       /* Reset the phone's file picker */
 
       fileInput.value = '';
