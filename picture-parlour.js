@@ -208,18 +208,71 @@ const DRIVE_UPLOAD_URL =
      RENDER GALLERY
      ========================================================= */
 
-  function renderGallery() {
+  async function loadDrivePhotos() {
+  const url =
+    DRIVE_UPLOAD_URL +
+    '?action=listPhotos&cb=' +
+    Date.now();
+
+  const response =
+    await fetch(
+      url,
+      {
+        method: 'GET',
+        redirect: 'follow',
+        cache: 'no-store'
+      }
+    );
+
+  const result =
+    await response.json();
+
+  if (!result.ok) {
+    throw new Error(
+      result.error ||
+      'Could not load the gallery.'
+    );
+  }
+
+  return result.photos || [];
+}
+
+
+async function renderGallery() {
+  galleryGrid.innerHTML = '';
+
+  const loading =
+    document.createElement('p');
+
+  loading.className =
+    'picture-gallery-empty';
+
+  loading.textContent =
+    'Developing photographs...';
+
+  galleryGrid.appendChild(
+    loading
+  );
+
+  try {
+    const photos =
+      await loadDrivePhotos();
+
     galleryGrid.innerHTML = '';
 
-    if (!selectedPhotos.length) {
-      const empty = document.createElement('p');
+    if (!photos.length) {
+      const empty =
+        document.createElement('p');
 
-      empty.className = 'picture-gallery-empty';
+      empty.className =
+        'picture-gallery-empty';
 
       empty.textContent =
         'No photographs have been added yet. Be the first to leave one behind.';
 
-      galleryGrid.appendChild(empty);
+      galleryGrid.appendChild(
+        empty
+      );
 
       return;
     }
@@ -233,45 +286,97 @@ const DRIVE_UPLOAD_URL =
       0.7
     ];
 
-    selectedPhotos.forEach((photo, index) => {
-      const button =
-        document.createElement('button');
+    photos.forEach(
+      (photo, index) => {
+        const button =
+          document.createElement(
+            'button'
+          );
 
-      button.type = 'button';
-      button.className = 'picture-polaroid';
+        button.type =
+          'button';
 
-      button.style.setProperty(
-        '--tilt',
-        `${tilts[index % tilts.length]}deg`
-      );
+        button.className =
+          'picture-polaroid';
 
-      button.setAttribute(
-        'aria-label',
-        `Open photo ${index + 1}`
-      );
+        button.style.setProperty(
+          '--tilt',
+          `${
+            tilts[
+              index %
+              tilts.length
+            ]
+          }deg`
+        );
 
-      const image =
-        document.createElement('img');
+        button.setAttribute(
+          'aria-label',
+          `Open photo ${index + 1}`
+        );
 
-      image.src = photo.url;
+        const image =
+          document.createElement(
+            'img'
+          );
 
-      image.alt =
-        photo.file.name ||
-        `Party photo ${index + 1}`;
+        image.src =
+          photo.thumbUrl;
 
-      button.appendChild(image);
+        image.alt =
+          photo.name ||
+          `Party photo ${index + 1}`;
 
-      /* MOBILE TAP → OPEN LARGE PHOTO */
+        image.loading =
+          'lazy';
 
-      button.addEventListener('click', () => {
-        lightboxImage.src = photo.url;
-        lightbox.hidden = false;
-      });
+        button.appendChild(
+          image
+        );
 
-      galleryGrid.appendChild(button);
-    });
+        /*
+           PHONE TAP:
+           open the larger Drive version.
+        */
+
+        button.addEventListener(
+          'click',
+          () => {
+            lightboxImage.src =
+              photo.fullUrl;
+
+            lightbox.hidden =
+              false;
+          }
+        );
+
+        galleryGrid.appendChild(
+          button
+        );
+      }
+    );
+
+  } catch (error) {
+    console.error(
+      'Gallery load failed:',
+      error
+    );
+
+    galleryGrid.innerHTML = '';
+
+    const failed =
+      document.createElement('p');
+
+    failed.className =
+      'picture-gallery-empty';
+
+    failed.textContent =
+      'The photographs could not be developed. Please try again.';
+
+    galleryGrid.appendChild(
+      failed
+    );
   }
-
+}
   /* =========================================================
      OPEN / CLOSE PICTURE PARLOUR
      ========================================================= */
@@ -299,17 +404,23 @@ const DRIVE_UPLOAD_URL =
      OPEN / CLOSE GALLERY
      ========================================================= */
 
-  function openGallery() {
-    renderGallery();
+ function openGallery() {
+  closeParlour();
 
-    closeParlour();
-
-    if (typeof gallery.showModal === 'function') {
-      gallery.showModal();
-    } else {
-      gallery.setAttribute('open', '');
-    }
+  if (
+    typeof gallery.showModal ===
+    'function'
+  ) {
+    gallery.showModal();
+  } else {
+    gallery.setAttribute(
+      'open',
+      ''
+    );
   }
+
+  renderGallery();
+}
 
   function closeGallery() {
     if (
