@@ -5,7 +5,8 @@
    Selected photos appear in the gallery for the current page
    session. Persistent party uploads will be connected later.
    ========================================================= */
-
+const DRIVE_UPLOAD_URL =
+  'https://script.google.com/macros/s/AKfycbwZadhWcQTpWbepfbPngKbl10JpbMzLRT77_gD5bbUsG1nkxv5F1qU8JKmemfIiZnk52g/exec';
 (() => {
 const camera = document.getElementById('art-camera');
 const cameraHotspot = document.querySelector('.hotspot-camera');
@@ -195,7 +196,118 @@ cameraHotspot.addEventListener('click', (event) => {
     openParlour();
     window.setTimeout(() => fileInput.click(), 80);
   });
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
 
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+
+    reader.readAsDataURL(file);
+  });
+}
+
+function loadImageFromFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const image = new Image();
+
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(
+        new Error('This photo could not be read.')
+      );
+
+      image.src = reader.result;
+    };
+
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
+async function preparePhotoForUpload(file) {
+  const image = await loadImageFromFile(file);
+
+  const MAX_DIMENSION = 1800;
+
+  let width = image.naturalWidth;
+  let height = image.naturalHeight;
+
+  if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+    const scale = Math.min(
+      MAX_DIMENSION / width,
+      MAX_DIMENSION / height
+    );
+
+    width = Math.round(width * scale);
+    height = Math.round(height * scale);
+  }
+
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+
+  const context = canvas.getContext('2d');
+
+  context.drawImage(
+    image,
+    0,
+    0,
+    width,
+    height
+  );
+
+  const blob = await new Promise((resolve, reject) => {
+    canvas.toBlob(
+      result => {
+        if (result) {
+          resolve(result);
+        } else {
+          reject(new Error('Could not prepare photo.'));
+        }
+      },
+      'image/jpeg',
+      0.84
+    );
+  });
+
+  const dataURL = await readFileAsDataURL(blob);
+
+  const originalBaseName =
+    file.name.replace(/\.[^.]+$/, '') || 'midway-photo';
+
+  return {
+    action: 'uploadPhoto',
+    fileName: originalBaseName + '.jpg',
+    mimeType: 'image/jpeg',
+    base64: dataURL.split(',')[1]
+  };
+}
+
+async function uploadPhotoToDrive(file) {
+  const payload = await preparePhotoForUpload(file);
+
+  const response = await fetch(DRIVE_UPLOAD_URL, {
+    method: 'POST',
+    redirect: 'follow',
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const result = await response.json();
+
+  if (!result.ok) {
+    throw new Error(
+      result.error || 'Google Drive upload failed.'
+    );
+  }
+
+  return result;
+}
   fileInput.addEventListener('change', () => {
     const files = Array.from(fileInput.files || []).filter(file =>
       file.type.startsWith('image/')
