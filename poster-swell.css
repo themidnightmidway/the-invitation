@@ -121,3 +121,120 @@ html.touch-device .hotspot[data-swell="true"]::after {
     transition-duration: 1ms !important;
   }
 }
+/* =========================================
+   CLICKABLE HINTS + RSVP PULSE
+   Add this at the very bottom of poster-swell.css
+========================================= */
+
+#art-rsvp {
+  transform-origin: 38% 50%;
+}
+
+#art-rsvp.rsvp-idle-pulse {
+  animation: rsvpIdlePulse 8s ease-in-out infinite;
+}
+
+@keyframes rsvpIdlePulse {
+  0%, 80%, 100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  84% {
+    transform: scale(1.04);
+    filter:
+      brightness(1.06)
+      drop-shadow(0 0 12px rgba(193, 131, 43, 0.26));
+  }
+  87% {
+    transform: scale(0.99);
+  }
+  91% {
+    transform: scale(1.055);
+    filter:
+      brightness(1.08)
+      drop-shadow(0 0 16px rgba(193, 131, 43, 0.34));
+  }
+  95% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+.guide-peek {
+  animation: artifactGuidePeek 760ms cubic-bezier(.18, .88, .32, 1);
+}
+
+@keyframes artifactGuidePeek {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  36% {
+    transform: scale(1.075);
+    filter:
+      brightness(1.05)
+      drop-shadow(0 12px 14px rgba(0, 0, 0, 0.30))
+      drop-shadow(0 0 10px rgba(196, 143, 58, 0.18));
+  }
+  68% {
+    transform: scale(0.995);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+.artifact-hint {
+  position: fixed;
+  left: 50%;
+  top: calc(env(safe-area-inset-top, 0px) + 16px);
+  transform: translate(-50%, -8px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+
+  padding: 11px 16px;
+  max-width: min(88vw, 340px);
+
+  color: #efe1bc;
+  background: rgba(14, 8, 5, 0.90);
+  border: 1px solid rgba(180, 134, 58, 0.48);
+  border-radius: 999px;
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.40),
+    0 0 0 1px rgba(90, 53, 17, 0.22) inset;
+
+  text-align: center;
+  font-family: 'IM Fell English SC', Georgia, serif;
+  font-size: 14px;
+  line-height: 1.2;
+  letter-spacing: 0.03em;
+
+  transition:
+    opacity 280ms ease,
+    transform 280ms ease;
+}
+
+.artifact-hint.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (max-width: 640px) {
+  .artifact-hint {
+    font-size: 13px;
+    padding: 10px 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #art-rsvp.rsvp-idle-pulse,
+  .guide-peek {
+    animation: none !important;
+  }
+
+  .artifact-hint {
+    transition: none !important;
+  }
+}
