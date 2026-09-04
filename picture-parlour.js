@@ -110,16 +110,24 @@ const DRIVE_UPLOAD_URL =
       </p>
 
       <div
-        class="picture-gallery-grid"
-        aria-live="polite"
-      ></div>
+  class="picture-gallery-grid"
+  aria-live="polite"
+></div>
 
-      <button
-        type="button"
-        class="picture-gallery-add"
-      >
-        Upload Photos
-      </button>
+<button
+  type="button"
+  class="picture-gallery-more"
+  hidden
+>
+  Load More Photos
+</button>
+
+<button
+  type="button"
+  class="picture-gallery-add"
+>
+  Upload Photos
+</button>
 
     </div>
   `;
@@ -176,10 +184,13 @@ const DRIVE_UPLOAD_URL =
     gallery.querySelector('.picture-gallery-close');
 
   const galleryGrid =
-    gallery.querySelector('.picture-gallery-grid');
+  gallery.querySelector('.picture-gallery-grid');
 
-  const galleryAdd =
-    gallery.querySelector('.picture-gallery-add');
+const galleryMore =
+  gallery.querySelector('.picture-gallery-more');
+
+const galleryAdd =
+  gallery.querySelector('.picture-gallery-add');
 
   const lightboxImage =
     lightbox.querySelector('.picture-lightbox-image');
@@ -208,11 +219,246 @@ const DRIVE_UPLOAD_URL =
      RENDER GALLERY
      ========================================================= */
 
-  async function loadDrivePhotos() {
-  const url =
+ let galleryNextPageToken = '';
+let galleryLoading = false;
+
+
+async function loadDrivePhotos(
+  pageToken = ''
+) {
+  let url =
     DRIVE_UPLOAD_URL +
-    '?action=listPhotos&cb=' +
+    '?action=listPhotos';
+
+  if (pageToken) {
+    url +=
+      '&pageToken=' +
+      encodeURIComponent(
+        pageToken
+      );
+  }
+
+  url +=
+    '&cb=' +
     Date.now();
+
+  const response =
+    await fetch(
+      url,
+      {
+        method: 'GET',
+        redirect: 'follow',
+        cache: 'no-store'
+      }
+    );
+
+  const result =
+    await response.json();
+
+  if (!result.ok) {
+    throw new Error(
+      result.error ||
+      'Could not load the gallery.'
+    );
+  }
+
+  return result;
+}
+
+
+async function renderGallery(
+  reset = true
+) {
+  if (galleryLoading) {
+    return;
+  }
+
+  galleryLoading = true;
+
+  if (reset) {
+    galleryNextPageToken = '';
+
+    galleryGrid.innerHTML = '';
+
+    galleryMore.hidden = true;
+
+    const loading =
+      document.createElement('p');
+
+    loading.className =
+      'picture-gallery-empty';
+
+    loading.textContent =
+      'Developing photographs...';
+
+    galleryGrid.appendChild(
+      loading
+    );
+
+  } else {
+    galleryMore.disabled = true;
+
+    galleryMore.textContent =
+      'Developing...';
+  }
+
+  try {
+    const result =
+      await loadDrivePhotos(
+        galleryNextPageToken
+      );
+
+    const photos =
+      result.photos || [];
+
+    if (reset) {
+      galleryGrid.innerHTML = '';
+    }
+
+    if (
+      reset &&
+      !photos.length
+    ) {
+      const empty =
+        document.createElement('p');
+
+      empty.className =
+        'picture-gallery-empty';
+
+      empty.textContent =
+        'No photographs have been added yet. Be the first to leave one behind.';
+
+      galleryGrid.appendChild(
+        empty
+      );
+
+      galleryMore.hidden = true;
+
+      return;
+    }
+
+    const tilts = [
+      -2.1,
+      1.4,
+      -0.8,
+      2.2,
+      -1.5,
+      0.7
+    ];
+
+    const existingCount =
+      galleryGrid.querySelectorAll(
+        '.picture-polaroid'
+      ).length;
+
+    photos.forEach(
+      (photo, index) => {
+        const button =
+          document.createElement(
+            'button'
+          );
+
+        button.type =
+          'button';
+
+        button.className =
+          'picture-polaroid';
+
+        const tiltIndex =
+          (
+            existingCount +
+            index
+          ) %
+          tilts.length;
+
+        button.style.setProperty(
+          '--tilt',
+          `${tilts[tiltIndex]}deg`
+        );
+
+        button.setAttribute(
+          'aria-label',
+          `Open photo ${
+            existingCount +
+            index +
+            1
+          }`
+        );
+
+        const image =
+          document.createElement(
+            'img'
+          );
+
+        image.src =
+          photo.thumbUrl;
+
+        image.alt =
+          photo.name ||
+          'Midnight Midway photo';
+
+        image.loading =
+          'lazy';
+
+        button.appendChild(
+          image
+        );
+
+        button.addEventListener(
+          'click',
+          () => {
+            lightboxImage.src =
+              photo.fullUrl;
+
+            lightbox.hidden =
+              false;
+          }
+        );
+
+        galleryGrid.appendChild(
+          button
+        );
+      }
+    );
+
+    galleryNextPageToken =
+      result.nextPageToken || '';
+
+    galleryMore.hidden =
+      !galleryNextPageToken;
+
+  } catch (error) {
+    console.error(
+      'Gallery load failed:',
+      error
+    );
+
+    if (reset) {
+      galleryGrid.innerHTML = '';
+
+      const failed =
+        document.createElement('p');
+
+      failed.className =
+        'picture-gallery-empty';
+
+      failed.textContent =
+        'The photographs could not be developed. Please try again.';
+
+      galleryGrid.appendChild(
+        failed
+      );
+    }
+
+  } finally {
+    galleryLoading = false;
+
+    galleryMore.disabled = false;
+
+    galleryMore.textContent =
+      'Load More Photos';
+  }
+}
 
   const response =
     await fetch(
@@ -236,10 +482,6 @@ const DRIVE_UPLOAD_URL =
 
   return result.photos || [];
 }
-
-
-async function renderGallery() {
-  galleryGrid.innerHTML = '';
 
   const loading =
     document.createElement('p');
@@ -486,6 +728,13 @@ async function renderGallery() {
     'click',
     closeGallery
   );
+
+galleryMore.addEventListener(
+  'click',
+  () => {
+    renderGallery(false);
+  }
+);
 
   galleryAdd.addEventListener(
     'click',
