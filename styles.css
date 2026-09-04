@@ -569,18 +569,31 @@ fieldset { border:1px solid rgba(233,207,151,.35); padding:13px 14px 8px; margin
   border-radius:0;
   outline:0;
   padding:0 2.2%;
-  background:rgba(255,248,222,.10);
+
+  background:transparent;
+  box-shadow:none;
+
+  -webkit-appearance:none;
+  appearance:none;
+
   color:#1b0d08;
   caret-color:#641319;
+
   font-family:Georgia, 'Times New Roman', serif;
   font-size:clamp(14px, 2.6vw, 27px);
   font-weight:700;
   letter-spacing:.015em;
 }
-.ticket-name-field input:hover { background:rgba(255,248,222,.18); }
+
+.ticket-name-field input:hover {
+  background:transparent;
+  box-shadow:none;
+}
+
 .ticket-name-field input:focus {
-  background:rgba(255,248,222,.30);
-  box-shadow:inset 0 0 0 3px rgba(74,25,15,.45);
+  background:transparent;
+  box-shadow:none;
+  outline:none;
 }
 
 /* Photoshop guide layers: Yes, I Dare and Regretfully No. They look like
