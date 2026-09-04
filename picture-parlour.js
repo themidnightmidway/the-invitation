@@ -459,7 +459,7 @@ const DRIVE_UPLOAD_URL =
     const image =
       await loadImageFromFile(file);
 
-    const MAX_DIMENSION = 1800;
+    const MAX_DIMENSION = 2400;
 
     let width =
       image.naturalWidth;
@@ -517,7 +517,7 @@ const DRIVE_UPLOAD_URL =
               }
             },
             'image/jpeg',
-            0.84
+            0.88
           );
         }
       );
