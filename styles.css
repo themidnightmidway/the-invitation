@@ -1,8 +1,3 @@
-/* THE MIDNIGHT MIDWAY - consolidated stylesheet
-   Includes: no-scroll responsive fit, extended background fill, mobile focus fixes,
-   hover swell, RSVP styling, bulb/star animation, and branded intro fonts.
-   IMPORTANT: Rye / IM Fell English SC / Special Elite should be loaded in index.html. */
-
 :root {
   --ink: #080604;
   --cream: #e2d2ae;
@@ -15,7 +10,7 @@
 }
 
 * { box-sizing: border-box; }
-html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; }
+html, body { width: 100%; height: 100%; margin: 0; }
 body {
   overflow: hidden;
   background:
@@ -32,29 +27,9 @@ button { -webkit-tap-highlight-color: transparent; }
   position: fixed;
   inset: 0;
   overflow: hidden;
-  background: #050403;
 }
-
-/* Fill any extra space on tall/narrow or wide screens with ONLY the
-   invitation's background artwork. The 1080x1920 poster itself still
-   scales with contain behavior, so it never crops and never scrolls. */
-.viewport::before {
-  content: "";
-  position: absolute;
-  inset: -28px;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(rgba(5,4,3,.18), rgba(5,4,3,.18)),
-    url("assets/background.png") center center / cover no-repeat;
-  filter: blur(8px) brightness(.72) saturate(.88);
-  transform: scale(1.035);
-  transform-origin: center;
-}
-
 .poster-shell {
   position: absolute;
-  z-index: 1;
   left: 0;
   top: 0;
   width: 1080px;
@@ -237,72 +212,51 @@ button { -webkit-tap-highlight-color: transparent; }
 }
 .intro-vignette { position:absolute; inset:0; box-shadow: inset 0 0 170px 70px #000; pointer-events:none; }
 .intro-card { position:relative; z-index:2; text-align:center; padding:32px; text-shadow:0 3px 2px #000; }
-.intro-kicker {
-  margin: 0 0 18px;
-  color: #c5a673;
-  font-family: 'IM Fell English SC', Georgia, serif;
-  font-size: clamp(11px, 2.7vw, 16px);
-  font-weight: 400;
-  letter-spacing: .34em;
-}
-.intro h1 {
-  margin: 0;
-  color: #d9c6a0;
-  font-family: 'Rye', Georgia, serif;
-  font-size: clamp(46px, 12vw, 92px);
-  font-weight: 400;
-  line-height: .82;
-  letter-spacing: .02em;
-}
+.intro-kicker { letter-spacing:.34em; font-size:clamp(11px, 2.7vw, 16px); margin:0 0 18px; color:#c5a673; }
+.intro h1 { margin:0; font-size:clamp(46px, 12vw, 92px); line-height:.82; letter-spacing:.02em; color:#d9c6a0; font-weight:900; }
 .intro h1 span { color:#7b161b; text-shadow:0 2px 0 #220507, 0 0 22px rgba(136,20,24,.28); }
 .intro-tagline {
   margin: 14px auto 0;
   max-width: 28ch;
   color: #d4bc91;
-  font-family: 'Special Elite', 'American Typewriter', 'Courier New', monospace;
   font-size: clamp(14px, 3.2vw, 19px);
-  font-weight: 400;
   line-height: 1.25;
   letter-spacing: .03em;
   text-shadow: 0 2px 0 #120906, 0 0 18px rgba(196,134,42,.14);
 }
 
 .marquee-tagline {
-  display: grid;
-  place-items: center;
-  padding: 0 22px;
-  color: #d2b985;
-  font-family: 'IM Fell English SC', Georgia, serif;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  color:#d2b985;
   font-size: 17px;
-  font-weight: 400;
-  line-height: 1.15;
-  letter-spacing: .08em;
-  text-align: center;
+  line-height:1.15;
+  letter-spacing:.08em;
   text-transform: uppercase;
   text-shadow: 0 2px 0 #110907, 0 0 18px rgba(0,0,0,.45);
+  padding: 0 22px;
 }
 
 .dialog-subtitle {
   margin: -6px 0 14px;
-  color: #6a3f24;
-  font-family: 'Special Elite', 'American Typewriter', 'Courier New', monospace;
-  font-size: .98rem;
+  font-size: 0.98rem;
   line-height: 1.3;
+  color: #6a3f24;
   letter-spacing: .03em;
 }
 
 .enter-button {
-  margin-top: 34px;
-  min-width: 220px;
-  border: 1px solid #9c713d;
-  padding: 15px 22px;
-  color: #e0cfa8;
-  background: linear-gradient(#1a110d,#0b0806);
-  font-family: 'Rye', Georgia, serif;
-  font-weight: 400;
-  letter-spacing: .12em;
-  box-shadow: inset 0 0 0 3px #090604, 0 0 24px rgba(183,138,73,.12);
-  cursor: pointer;
+  margin-top:34px;
+  min-width:220px;
+  border:1px solid #9c713d;
+  padding:15px 22px;
+  color:#e0cfa8;
+  background:linear-gradient(#1a110d,#0b0806);
+  letter-spacing:.12em;
+  font-weight:700;
+  box-shadow:inset 0 0 0 3px #090604, 0 0 24px rgba(183,138,73,.12);
+  cursor:pointer;
 }
 .enter-button:hover { filter:brightness(1.15); }
 
@@ -355,15 +309,19 @@ button { -webkit-tap-highlight-color: transparent; }
 .perforation { border-top:2px dashed rgba(231,207,157,.56); margin:22px -8px 25px; }
 #rsvpForm { display:grid; gap:18px; }
 #rsvpForm label > span, fieldset legend { display:block; font-size:12px; letter-spacing:.11em; text-transform:uppercase; margin-bottom:7px; color:#e2c88f; font-weight:800; }
-#rsvpForm input[type='text'], #rsvpForm input:not([type]), #rsvpForm input[type='number'], #rsvpForm textarea {
-  width:100%;
-  border:1px solid rgba(233,207,151,.55);
-  border-radius:0;
-  background:rgba(19,7,6,.48);
-  color:#fff3d7;
-  padding:13px 12px;
-  outline:none;
-
+fieldset { border:1px solid rgba(233,207,151,.35); padding:13px 14px 8px; margin:0; }
+.radio-line { display:flex !important; gap:10px; align-items:center; padding:7px 0; cursor:pointer; }
+.radio-line span { margin:0 !important; color:#f1dfbb !important; font-size:15px !important; letter-spacing:0 !important; text-transform:none !important; font-weight:400 !important; }
+.claim-button {
+  margin-top:4px;
+  border:1px solid #d1b072;
+  background:#120b08;
+  color:#f0dcaf;
+  padding:16px 18px;
+  letter-spacing:.13em;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:inset 0 0 0 3px #5e1217;
 }
 .claim-button:disabled { opacity:.55; cursor:wait; }
 .form-note { margin:0 !important; font-size:12px !important; color:#c7a97c; text-align:center; }
@@ -555,31 +513,18 @@ button { -webkit-tap-highlight-color: transparent; }
   border-radius:0;
   outline:0;
   padding:0 2.2%;
-
-  background:transparent;
-  box-shadow:none;
-
-  -webkit-appearance:none;
-  appearance:none;
-
+  background:rgba(255,248,222,.10);
   color:#1b0d08;
   caret-color:#641319;
-
   font-family:Georgia, 'Times New Roman', serif;
   font-size:clamp(14px, 2.6vw, 27px);
   font-weight:700;
   letter-spacing:.015em;
 }
-
-.ticket-name-field input:hover {
-  background:transparent;
-  box-shadow:none;
-}
-
+.ticket-name-field input:hover { background:rgba(255,248,222,.18); }
 .ticket-name-field input:focus {
-  background:transparent;
-  box-shadow:none;
-  outline:none;
+  background:rgba(255,248,222,.30);
+  box-shadow:inset 0 0 0 3px rgba(74,25,15,.45);
 }
 
 /* Photoshop guide layers: Yes, I Dare and Regretfully No. They look like
@@ -625,7 +570,7 @@ button { -webkit-tap-highlight-color: transparent; }
   font-size:clamp(20px, 4vw, 40px);
   font-weight:900;
   line-height:1;
-   transform:translate(4%, -8%) rotate(-8deg);
+  transform:translate(10%, -14%) rotate(-8deg);
   text-shadow:0 1px 0 rgba(255,228,174,.28);
 }
 
@@ -921,24 +866,39 @@ html.touch-device .rsvp-close:hover {
     outline: 2px solid #e4c98f;
     outline-offset: 2px;
   }
-/* FINAL RSVP NAME FIELD OVERRIDE */
+}
+
+/* =============================================================
+   FINAL RSVP NAME FIELD SAFETY RULE
+   The printed ticket artwork supplies the visible field. The real HTML input
+   remains transparent so only typed text and the caret appear over the art.
+   ============================================================= */
 #rsvpForm .ticket-name-field input,
 #rsvpForm .ticket-name-field input:hover,
 #rsvpForm .ticket-name-field input:focus,
-#rsvpForm .ticket-name-field input:active,
-#rsvpForm .ticket-name-field input:autofill,
-#rsvpForm .ticket-name-field input:-webkit-autofill {
+#rsvpForm .ticket-name-field input:active {
   background: transparent !important;
   background-color: transparent !important;
-  border: none !important;
-  outline: none !important;
+  border: 0 !important;
+  outline: 0 !important;
   box-shadow: none !important;
-
   -webkit-appearance: none !important;
   appearance: none !important;
-
   color: #1b0d08 !important;
   -webkit-text-fill-color: #1b0d08 !important;
-
   padding: 0 2.2% !important;
 }
+
+/* Prevent iPhone/Safari autofill styling from repainting the field. */
+#rsvpForm .ticket-name-field input:-webkit-autofill,
+#rsvpForm .ticket-name-field input:-webkit-autofill:hover,
+#rsvpForm .ticket-name-field input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #1b0d08 !important;
+  caret-color: #641319 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+  transition: background-color 9999s ease-out 0s;
+}
+
