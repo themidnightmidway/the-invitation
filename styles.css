@@ -363,21 +363,7 @@ button { -webkit-tap-highlight-color: transparent; }
   color:#fff3d7;
   padding:13px 12px;
   outline:none;
-}
-#rsvpForm input:focus, #rsvpForm textarea:focus { border-color:#f0d89f; box-shadow:0 0 0 3px rgba(240,216,159,.12); }
-fieldset { border:1px solid rgba(233,207,151,.35); padding:13px 14px 8px; margin:0; }
-.radio-line { display:flex !important; gap:10px; align-items:center; padding:7px 0; cursor:pointer; }
-.radio-line span { margin:0 !important; color:#f1dfbb !important; font-size:15px !important; letter-spacing:0 !important; text-transform:none !important; font-weight:400 !important; }
-.claim-button {
-  margin-top:4px;
-  border:1px solid #d1b072;
-  background:#120b08;
-  color:#f0dcaf;
-  padding:16px 18px;
-  letter-spacing:.13em;
-  font-weight:900;
-  cursor:pointer;
-  box-shadow:inset 0 0 0 3px #5e1217;
+
 }
 .claim-button:disabled { opacity:.55; cursor:wait; }
 .form-note { margin:0 !important; font-size:12px !important; color:#c7a97c; text-align:center; }
