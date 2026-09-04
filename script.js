@@ -127,6 +127,7 @@ dialogs.forEach(dialog => {
 const rsvpForm = document.getElementById('rsvpForm');
 const rsvpSuccess = document.getElementById('rsvpSuccess');
 const rsvpNames = document.getElementById('rsvpNames');
+const guestCount = document.getElementById('guestCount');
 
 rsvpNames.addEventListener('input', () => {
   if (guestCount.disabled) return;
