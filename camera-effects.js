@@ -52,14 +52,14 @@ function swellCamera() {
     jiggleTimer = window.setTimeout(() => {
       jiggleCamera();
       scheduleJiggle();
-    }, randomDelay(10000, 16000));
+    }, randomDelay(4000, 7000));
   }
 
   function scheduleFlash() {
     flashTimer = window.setTimeout(() => {
       fireFlash();
       scheduleFlash();
-    }, randomDelay(18000, 28000));
+    }, randomDelay(8000, 13000));
   }
 
   function startCameraEffects() {
