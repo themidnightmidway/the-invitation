@@ -248,3 +248,6 @@ document.querySelectorAll('.hotspot[data-art]').forEach(hotspot => {
   hotspot.addEventListener('pointerup', pressOff);
   hotspot.addEventListener('pointercancel', pressOff);
 });
+window.addEventListener('load', () => {
+  document.body.classList.add('poster-ready');
+});
