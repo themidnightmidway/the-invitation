@@ -929,3 +929,11 @@ html.touch-device .rsvp-close:hover {
   transition: background-color 9999s ease-out 0s;
 }
 
+/* Keep the poster hidden until the page finishes loading */
+.poster-shell {
+  visibility: hidden;
+}
+
+body.poster-ready .poster-shell {
+  visibility: visible;
+}
