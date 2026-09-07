@@ -59,7 +59,7 @@ function swellCamera() {
     flashTimer = window.setTimeout(() => {
       fireFlash();
       scheduleFlash();
-    }, randomDelay(8000, 13000));
+    }, randomDelay(5000, 8000));
   }
 
   function startCameraEffects() {
