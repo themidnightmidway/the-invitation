@@ -937,3 +937,9 @@ html.touch-device .rsvp-close:hover {
 body.poster-ready .poster-shell {
   visibility: visible;
 }
+
+/* Chrome/Android rendering compatibility */
+.poster-shell {
+  filter: none !important;
+  will-change: auto !important;
+}
