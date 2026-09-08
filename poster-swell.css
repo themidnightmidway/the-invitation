@@ -238,3 +238,14 @@ transform: translate(-50%, -50%) scale(0.96);
     transition: none !important;
   }
 
+  /* Compatibility: keep swell/flip motion, remove live CSS shadows */
+.interactive-art.is-expanded,
+.poster-flip-stage,
+.poster-flip-stage.is-expanded {
+  filter: none !important;
+}
+
+/* Compatibility: let Chrome manage compositing itself */
+.interactive-art {
+  will-change: auto !important;
+}
